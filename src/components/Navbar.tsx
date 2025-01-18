@@ -1,7 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Wallet2 } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Navbar = () => {
+  const { session, connectWallet, disconnectWallet } = useAuth();
+
+  const handleWalletClick = async () => {
+    if (session) {
+      await disconnectWallet();
+    } else {
+      await connectWallet();
+    }
+  };
+
   return (
     <nav className="fixed w-full z-50 glass">
       <div className="container mx-auto px-4 py-4">
@@ -18,9 +29,12 @@ export const Navbar = () => {
             <a href="#about" className="text-gray-300 hover:text-white transition-colors">
               About
             </a>
-            <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700">
+            <Button 
+              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              onClick={handleWalletClick}
+            >
               <Wallet2 className="mr-2 h-4 w-4" />
-              Connect Wallet
+              {session ? "Disconnect Wallet" : "Connect Wallet"}
             </Button>
           </div>
         </div>
