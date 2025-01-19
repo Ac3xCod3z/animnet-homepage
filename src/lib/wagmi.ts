@@ -7,7 +7,9 @@ import { createWeb3Modal } from '@web3modal/wagmi';
 
 const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID;
 
-console.log('Initializing WalletConnect with project ID:', projectId?.substring(0, 5) + '...');
+if (!projectId) {
+  console.error('WalletConnect project ID is not defined in environment variables');
+}
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon],
@@ -35,12 +37,13 @@ export const config = createConfig({
   publicClient,
 });
 
-if (typeof window !== 'undefined') {
+// Only initialize Web3Modal in browser environment and when projectId is available
+if (typeof window !== 'undefined' && projectId) {
   try {
-    console.log('Initializing Web3Modal...');
+    console.log('Initializing Web3Modal with project ID:', projectId);
     createWeb3Modal({
       wagmiConfig: config,
-      projectId: projectId || '',
+      projectId: projectId,
       chains,
       themeMode: 'dark',
       defaultChain: mainnet,
