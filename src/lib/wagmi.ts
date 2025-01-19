@@ -4,13 +4,24 @@ import { InjectedConnector } from 'wagmi/connectors/injected';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { publicProvider } from 'wagmi/providers/public';
 import { createWeb3Modal } from '@web3modal/wagmi';
+import { supabase } from '@/integrations/supabase/client';
 
-const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID;
+// Initialize with a default value that will be replaced once we fetch from Supabase
+let projectId: string | undefined;
 
-if (!projectId) {
-  console.error('WalletConnect project ID is not defined in environment variables');
-  throw new Error('WalletConnect project ID is required');
-}
+// Fetch the project ID from Supabase secrets
+const initializeProjectId = async () => {
+  try {
+    const { data, error } = await supabase.functions.invoke('get-wallet-connect-id');
+    if (error) throw error;
+    projectId = data.projectId;
+    console.log('Successfully retrieved WalletConnect project ID from Supabase');
+    initializeWeb3Modal();
+  } catch (error) {
+    console.error('Failed to retrieve WalletConnect project ID:', error);
+    throw new Error('Failed to initialize WalletConnect');
+  }
+};
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon],
@@ -20,7 +31,7 @@ const { chains, publicClient } = configureChains(
 const walletConnectConnector = new WalletConnectConnector({
   chains,
   options: {
-    projectId,
+    projectId: projectId,
     metadata: {
       name: 'AnimNet',
       description: 'AnimNet Web3 Application',
@@ -43,19 +54,25 @@ export const config = createConfig({
   publicClient,
 });
 
-// Initialize Web3Modal only if we're in a browser environment
-if (typeof window !== 'undefined') {
-  try {
-    console.log('Initializing Web3Modal with projectId:', projectId);
-    createWeb3Modal({
-      wagmiConfig: config,
-      projectId,
-      chains,
-      themeMode: 'dark',
-      defaultChain: mainnet,
-    });
-    console.log('Web3Modal initialized successfully');
-  } catch (error) {
-    console.error('Failed to initialize Web3Modal:', error);
+const initializeWeb3Modal = () => {
+  if (typeof window !== 'undefined' && projectId) {
+    try {
+      console.log('Initializing Web3Modal with projectId');
+      createWeb3Modal({
+        wagmiConfig: config,
+        projectId,
+        chains,
+        themeMode: 'dark',
+        defaultChain: mainnet,
+      });
+      console.log('Web3Modal initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize Web3Modal:', error);
+    }
   }
-}
+};
+
+// Start the initialization process
+initializeProjectId();
+
+export { projectId };
