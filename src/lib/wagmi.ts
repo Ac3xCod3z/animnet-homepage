@@ -14,6 +14,10 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
+// Ensure all URLs are strings
+const appUrl = typeof window !== 'undefined' ? window.location.origin : '';
+const iconUrl = `${appUrl}/favicon.ico`;
+
 export const config = createConfig({
   autoConnect: true,
   connectors: [
@@ -25,8 +29,8 @@ export const config = createConfig({
         metadata: {
           name: 'AnimNet',
           description: 'AnimNet Web3 Platform',
-          url: window.location.origin,
-          icons: [`${window.location.origin}/favicon.ico`]
+          url: appUrl,
+          icons: [iconUrl]
         }
       },
     }),
