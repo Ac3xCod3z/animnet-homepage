@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { useAccount, useConnect, useDisconnect } from 'wagmi';
+import { config } from '@/lib/wagmi';
 
 interface AuthContextType {
   session: Session | null;
@@ -16,6 +18,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
+  const { address, isConnected } = useAccount();
+  const { connectAsync, connectors } = useConnect();
+  const { disconnectAsync } = useDisconnect();
 
   useEffect(() => {
     console.log("Setting up auth state listener");
@@ -36,22 +41,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const connectWallet = async () => {
+  useEffect(() => {
+    if (address && session) {
+      updateWalletAddress(address);
+    }
+  }, [address, session]);
+
+  const updateWalletAddress = async (address: string) => {
     try {
-      // Simulating wallet connection for now
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin,
-        },
-      });
+      const { error } = await supabase
+        .from('profiles')
+        .update({ wallet_address: address })
+        .eq('id', session?.user.id);
 
       if (error) throw error;
-      
+    } catch (error) {
+      console.error('Error updating wallet address:', error);
       toast({
-        title: "Success",
-        description: "Wallet connected successfully",
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to update wallet address",
       });
+    }
+  };
+
+  const connectWallet = async () => {
+    try {
+      const connector = connectors[0]; // WalletConnect connector
+      const result = await connectAsync({ connector });
+      
+      if (result.address) {
+        toast({
+          title: "Success",
+          description: "Wallet connected successfully",
+        });
+      }
     } catch (error) {
       console.error("Error connecting wallet:", error);
       toast({
@@ -64,8 +88,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const disconnectWallet = async () => {
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await disconnectAsync();
+      
+      if (session?.user.id) {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ wallet_address: null })
+          .eq('id', session.user.id);
+
+        if (error) throw error;
+      }
       
       toast({
         title: "Success",
