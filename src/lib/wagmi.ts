@@ -5,15 +5,9 @@ import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { publicProvider } from 'wagmi/providers/public';
 import { createWeb3Modal } from '@web3modal/wagmi';
 
-// Access the environment variable
 const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID;
 
-if (!projectId) {
-  console.error('WalletConnect project ID is not defined in environment variables');
-  throw new Error('WalletConnect project ID is required');
-}
-
-console.log('Initializing WalletConnect with project ID:', projectId);
+console.log('Initializing WalletConnect with project ID:', projectId?.substring(0, 5) + '...');
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon],
@@ -26,13 +20,13 @@ export const config = createConfig({
     new WalletConnectConnector({
       chains,
       options: {
-        projectId,
-        showQrModal: false,
+        projectId: projectId || '',
+        showQrModal: true,
         metadata: {
-          name: 'Your App Name',
-          description: 'Your App Description',
+          name: 'AnimNet',
+          description: 'AnimNet Web3 Platform',
           url: window.location.origin,
-          icons: ['https://your-app-icon.com']
+          icons: [`${window.location.origin}/favicon.ico`]
         }
       },
     }),
@@ -50,16 +44,11 @@ export const config = createConfig({
 // Initialize Web3Modal only after the window is fully loaded
 if (typeof window !== 'undefined') {
   window.addEventListener('load', () => {
-    if (!projectId) {
-      console.error('Cannot initialize Web3Modal: Project ID is missing');
-      return;
-    }
-
     try {
       console.log('Initializing Web3Modal...');
       createWeb3Modal({
         wagmiConfig: config,
-        projectId,
+        projectId: projectId || '',
         chains,
         themeMode: 'dark',
         defaultChain: mainnet,
