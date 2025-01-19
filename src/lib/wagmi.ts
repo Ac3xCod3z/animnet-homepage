@@ -16,39 +16,42 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
+const walletConnectConnector = new WalletConnectConnector({
+  chains,
+  options: {
+    projectId: projectId || '',
+    showQrModal: false, // We'll use Web3Modal for this
+  },
+});
+
+const injectedConnector = new InjectedConnector({
+  chains,
+  options: {
+    name: 'Injected',
+    shimDisconnect: true,
+  },
+});
+
 export const config = createConfig({
   autoConnect: true,
   connectors: [
-    new WalletConnectConnector({
-      chains,
-      options: {
-        projectId: projectId || '',
-        showQrModal: true,
-      },
-    }),
-    new InjectedConnector({
-      chains,
-      options: {
-        name: 'Injected',
-        shimDisconnect: true,
-      },
-    }),
+    walletConnectConnector,
+    injectedConnector
   ],
   publicClient,
 });
 
-// Only initialize Web3Modal in browser environment and when projectId is available
+// Initialize Web3Modal only if we're in a browser environment and have a project ID
 if (typeof window !== 'undefined' && projectId) {
   try {
-    console.log('Initializing Web3Modal with project ID:', projectId);
+    console.log('Initializing Web3Modal...');
     createWeb3Modal({
       wagmiConfig: config,
-      projectId: projectId,
+      projectId,
       chains,
       themeMode: 'dark',
       defaultChain: mainnet,
     });
-    console.log('Web3Modal initialized successfully');
   } catch (error) {
     console.error('Failed to initialize Web3Modal:', error);
   }
