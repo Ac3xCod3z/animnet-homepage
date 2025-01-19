@@ -14,14 +14,6 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
-// Create metadata with static strings to avoid URL object issues
-const metadata = {
-  name: 'AnimNet',
-  description: 'AnimNet Web3 Platform',
-  url: 'https://animnet.com',
-  icons: ['https://animnet.com/favicon.ico']
-};
-
 export const config = createConfig({
   autoConnect: true,
   connectors: [
@@ -30,7 +22,6 @@ export const config = createConfig({
       options: {
         projectId: projectId || '',
         showQrModal: true,
-        metadata
       },
     }),
     new InjectedConnector({
@@ -44,7 +35,6 @@ export const config = createConfig({
   publicClient,
 });
 
-// Initialize Web3Modal only if we're in a browser environment
 if (typeof window !== 'undefined') {
   try {
     console.log('Initializing Web3Modal...');
