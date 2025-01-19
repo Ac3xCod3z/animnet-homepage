@@ -6,33 +6,49 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders })
+    return new Response('ok', { 
+      headers: corsHeaders,
+      status: 200
+    });
   }
 
   try {
-    const projectId = Deno.env.get('WALLET_CONNECT_PROJECT_ID')
+    const projectId = Deno.env.get('WALLET_CONNECT_PROJECT_ID');
     
     if (!projectId) {
-      throw new Error('WALLET_CONNECT_PROJECT_ID is not set')
+      throw new Error('WALLET_CONNECT_PROJECT_ID environment variable is not set');
     }
 
+    const responseData = {
+      projectId: projectId,
+    };
+
     return new Response(
-      JSON.stringify({
-        projectId: projectId,
-      }),
+      JSON.stringify(responseData),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json'
+        },
         status: 200,
       },
-    )
+    );
   } catch (error) {
+    console.error('Error in get-wallet-connect-id function:', error);
+    
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message || 'Internal server error'
+      }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json'
+        },
+        status: 500,
       },
-    )
+    );
   }
 })
