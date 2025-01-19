@@ -66,6 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const connectWallet = async (): Promise<void> => {
     try {
+      console.log("Attempting to connect wallet...");
       const connector = connectors[0];
       const result = await connectAsync({ connector });
       
@@ -73,12 +74,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('No account returned from wallet connection');
       }
 
+      console.log("Wallet connected successfully:", result.account);
       toast({
         title: "Success",
         description: "Wallet connected successfully",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error connecting wallet:", error);
+      
+      // Handle user rejection specifically
+      if (error.name === 'UserRejectedRequestError') {
+        toast({
+          title: "Connection Cancelled",
+          description: "You cancelled the wallet connection request",
+          variant: "default"
+        });
+        return; // Exit without throwing since this is an expected user action
+      }
+
+      // Handle other errors
       toast({
         variant: "destructive",
         title: "Error",
@@ -90,6 +104,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const disconnectWallet = async (): Promise<void> => {
     try {
+      console.log("Attempting to disconnect wallet...");
       await disconnectAsync();
       
       if (session?.user.id) {
@@ -101,6 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (error) throw error;
       }
       
+      console.log("Wallet disconnected successfully");
       toast({
         title: "Success",
         description: "Wallet disconnected successfully",
