@@ -20,7 +20,11 @@ const walletConnectConnector = new WalletConnectConnector({
   chains,
   options: {
     projectId: projectId || '',
-    showQrModal: false, // We'll use Web3Modal for this
+    showQrModal: false,
+    metadata: {
+      name: 'AnimNet',
+      description: 'AnimNet Web3 Application',
+    },
   },
 });
 
@@ -34,24 +38,22 @@ const injectedConnector = new InjectedConnector({
 
 export const config = createConfig({
   autoConnect: true,
-  connectors: [
-    walletConnectConnector,
-    injectedConnector
-  ],
+  connectors: [walletConnectConnector, injectedConnector],
   publicClient,
 });
 
-// Initialize Web3Modal only if we're in a browser environment and have a project ID
-if (typeof window !== 'undefined' && projectId) {
+// Initialize Web3Modal only if we're in a browser environment
+if (typeof window !== 'undefined') {
   try {
-    console.log('Initializing Web3Modal...');
+    console.log('Initializing Web3Modal with projectId:', projectId);
     createWeb3Modal({
       wagmiConfig: config,
-      projectId,
+      projectId: projectId || '',
       chains,
       themeMode: 'dark',
       defaultChain: mainnet,
     });
+    console.log('Web3Modal initialized successfully');
   } catch (error) {
     console.error('Failed to initialize Web3Modal:', error);
   }
