@@ -24,7 +24,7 @@ export const config = createConfig({
       chains,
       options: {
         projectId: projectId || '',
-        showQrModal: true,
+        showQrModal: false, // Changed to false to prevent URL cloning issues
       },
     }),
     new InjectedConnector({
@@ -38,12 +38,20 @@ export const config = createConfig({
   publicClient,
 });
 
-// Only create Web3Modal if we have a project ID
-if (projectId) {
-  createWeb3Modal({
-    wagmiConfig: config,
-    projectId,
-    chains,
-    themeMode: 'dark',
+// Initialize Web3Modal only after the window is fully loaded
+if (typeof window !== 'undefined') {
+  window.addEventListener('load', () => {
+    if (projectId) {
+      try {
+        createWeb3Modal({
+          wagmiConfig: config,
+          projectId,
+          chains,
+          themeMode: 'dark',
+        });
+      } catch (error) {
+        console.error('Failed to initialize Web3Modal:', error);
+      }
+    }
   });
 }

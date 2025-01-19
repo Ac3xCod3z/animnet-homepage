@@ -3,7 +3,6 @@ import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { useAccount, useConnect, useDisconnect } from 'wagmi';
-import { config } from '@/lib/wagmi';
 
 interface AuthContextType {
   session: Session | null;
@@ -65,7 +64,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const connectWallet = async () => {
+  const connectWallet = async (): Promise<void> => {
     try {
       const connector = connectors[0];
       const result = await connectAsync({ connector });
@@ -78,8 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Success",
         description: "Wallet connected successfully",
       });
-
-      return result;
     } catch (error) {
       console.error("Error connecting wallet:", error);
       toast({
@@ -91,7 +88,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const disconnectWallet = async () => {
+  const disconnectWallet = async (): Promise<void> => {
     try {
       await disconnectAsync();
       
