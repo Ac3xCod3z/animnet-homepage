@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const useWalletConnection = (userId: string | undefined) => {
   const { toast } = useToast();
-  const { connectAsync, connectors } = useConnect();
+  const { connectAsync, connectors, status } = useConnect();
   const { disconnectAsync } = useDisconnect();
 
   const updateWalletAddress = async (address: string) => {
@@ -28,6 +28,17 @@ export const useWalletConnection = (userId: string | undefined) => {
   const connectWallet = async (): Promise<void> => {
     try {
       console.log("Attempting to connect wallet...");
+      
+      // Check if already connected
+      if (status === 'connected') {
+        console.log("Wallet is already connected");
+        toast({
+          title: "Info",
+          description: "Wallet is already connected",
+        });
+        return;
+      }
+
       const connector = connectors[0];
       const result = await connectAsync({ connector });
       
@@ -47,6 +58,15 @@ export const useWalletConnection = (userId: string | undefined) => {
         toast({
           title: "Connection Cancelled",
           description: "You cancelled the wallet connection request",
+          variant: "default"
+        });
+        return;
+      }
+
+      if (error.name === 'ConnectorAlreadyConnectedError') {
+        toast({
+          title: "Already Connected",
+          description: "Wallet is already connected",
           variant: "default"
         });
         return;
