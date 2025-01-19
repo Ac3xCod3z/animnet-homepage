@@ -14,9 +14,13 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
-// Ensure all URLs are strings
-const appUrl = typeof window !== 'undefined' ? window.location.origin : '';
-const iconUrl = `${appUrl}/favicon.ico`;
+// Create metadata with static strings to avoid URL object issues
+const metadata = {
+  name: 'AnimNet',
+  description: 'AnimNet Web3 Platform',
+  url: 'https://animnet.com',
+  icons: ['https://animnet.com/favicon.ico']
+};
 
 export const config = createConfig({
   autoConnect: true,
@@ -26,12 +30,7 @@ export const config = createConfig({
       options: {
         projectId: projectId || '',
         showQrModal: true,
-        metadata: {
-          name: 'AnimNet',
-          description: 'AnimNet Web3 Platform',
-          url: appUrl,
-          icons: [iconUrl]
-        }
+        metadata
       },
     }),
     new InjectedConnector({
@@ -45,21 +44,19 @@ export const config = createConfig({
   publicClient,
 });
 
-// Initialize Web3Modal only after the window is fully loaded
+// Initialize Web3Modal only if we're in a browser environment
 if (typeof window !== 'undefined') {
-  window.addEventListener('load', () => {
-    try {
-      console.log('Initializing Web3Modal...');
-      createWeb3Modal({
-        wagmiConfig: config,
-        projectId: projectId || '',
-        chains,
-        themeMode: 'dark',
-        defaultChain: mainnet,
-      });
-      console.log('Web3Modal initialized successfully');
-    } catch (error) {
-      console.error('Failed to initialize Web3Modal:', error);
-    }
-  });
+  try {
+    console.log('Initializing Web3Modal...');
+    createWeb3Modal({
+      wagmiConfig: config,
+      projectId: projectId || '',
+      chains,
+      themeMode: 'dark',
+      defaultChain: mainnet,
+    });
+    console.log('Web3Modal initialized successfully');
+  } catch (error) {
+    console.error('Failed to initialize Web3Modal:', error);
+  }
 }
