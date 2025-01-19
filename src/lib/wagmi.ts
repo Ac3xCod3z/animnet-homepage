@@ -9,6 +9,7 @@ const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID;
 
 if (!projectId) {
   console.error('WalletConnect project ID is not defined in environment variables');
+  throw new Error('WalletConnect project ID is required');
 }
 
 const { chains, publicClient } = configureChains(
@@ -19,11 +20,11 @@ const { chains, publicClient } = configureChains(
 const walletConnectConnector = new WalletConnectConnector({
   chains,
   options: {
-    projectId: projectId || '',
-    showQrModal: false,
+    projectId,
     metadata: {
       name: 'AnimNet',
       description: 'AnimNet Web3 Application',
+      url: window.location.origin,
     },
   },
 });
@@ -37,7 +38,7 @@ const injectedConnector = new InjectedConnector({
 });
 
 export const config = createConfig({
-  autoConnect: true,
+  autoConnect: false,
   connectors: [walletConnectConnector, injectedConnector],
   publicClient,
 });
@@ -48,7 +49,7 @@ if (typeof window !== 'undefined') {
     console.log('Initializing Web3Modal with projectId:', projectId);
     createWeb3Modal({
       wagmiConfig: config,
-      projectId: projectId || '',
+      projectId,
       chains,
       themeMode: 'dark',
       defaultChain: mainnet,
