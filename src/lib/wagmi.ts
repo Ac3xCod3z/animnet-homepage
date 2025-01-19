@@ -5,7 +5,12 @@ import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { publicProvider } from 'wagmi/providers/public';
 import { createWeb3Modal } from '@web3modal/wagmi';
 
-const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || '';
+// Access the environment variable
+const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID;
+
+if (!projectId) {
+  console.error('WalletConnect project ID is not defined');
+}
 
 const { chains, publicClient } = configureChains(
   [mainnet, polygon],
@@ -18,7 +23,7 @@ export const config = createConfig({
     new WalletConnectConnector({
       chains,
       options: {
-        projectId,
+        projectId: projectId || '',
         showQrModal: true,
       },
     }),
@@ -33,9 +38,12 @@ export const config = createConfig({
   publicClient,
 });
 
-createWeb3Modal({
-  wagmiConfig: config,
-  projectId,
-  chains,
-  themeMode: 'dark',
-});
+// Only create Web3Modal if we have a project ID
+if (projectId) {
+  createWeb3Modal({
+    wagmiConfig: config,
+    projectId,
+    chains,
+    themeMode: 'dark',
+  });
+}

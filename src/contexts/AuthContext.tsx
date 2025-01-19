@@ -67,15 +67,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const connectWallet = async () => {
     try {
-      const connector = connectors[0]; // WalletConnect connector
+      const connector = connectors[0];
       const result = await connectAsync({ connector });
       
-      if (result.address) {
-        toast({
-          title: "Success",
-          description: "Wallet connected successfully",
-        });
+      if (!result?.account) {
+        throw new Error('No account returned from wallet connection');
       }
+
+      toast({
+        title: "Success",
+        description: "Wallet connected successfully",
+      });
+
+      return result;
     } catch (error) {
       console.error("Error connecting wallet:", error);
       toast({
@@ -83,6 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Error",
         description: "Failed to connect wallet. Please try again.",
       });
+      throw error;
     }
   };
 
@@ -110,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Error",
         description: "Failed to disconnect wallet. Please try again.",
       });
+      throw error;
     }
   };
 
