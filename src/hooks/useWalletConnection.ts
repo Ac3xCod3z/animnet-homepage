@@ -30,7 +30,7 @@ export const useWalletConnection = (userId: string | undefined) => {
       console.log("Attempting to connect wallet...");
       
       // Check if already connected
-      if (status === 'connected') {
+      if (status === 'success') {
         console.log("Wallet is already connected");
         toast({
           title: "Info",
