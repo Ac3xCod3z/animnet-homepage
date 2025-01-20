@@ -11,7 +11,7 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
-// Create config without WalletConnect initially
+// Create config with InjectedConnector that requires explicit connection
 export const config = createConfig({
   autoConnect: false,
   connectors: [
@@ -20,6 +20,7 @@ export const config = createConfig({
       options: {
         name: 'Injected',
         shimDisconnect: true,
+        shimChainChangedDisconnect: true,
       },
     })
   ],
@@ -44,12 +45,13 @@ const initializeWalletConnect = async () => {
     const projectId = data.projectId;
     console.log('Successfully retrieved WalletConnect project ID');
 
-    // Add WalletConnect connector
+    // Add WalletConnect connector with explicit connection requirement
     config.connectors.push(
       new WalletConnectConnector({
         chains,
         options: {
           projectId,
+          showQrModal: true,
           metadata: {
             name: 'AnimNet',
             description: 'AnimNet Web3 Application',
@@ -74,7 +76,6 @@ const initializeWalletConnect = async () => {
     }
   } catch (error) {
     console.error('Failed to initialize WalletConnect:', error);
-    // Don't throw here - we want the app to continue working with just the injected connector
   }
 };
 
