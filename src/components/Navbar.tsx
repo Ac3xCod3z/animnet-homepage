@@ -41,7 +41,7 @@ export const Navbar = () => {
               onClick={handleWalletClick}
             >
               <Wallet2 className="mr-2 h-4 w-4" />
-              {session && address ? truncateAddress(address) : "Connect Wallet"}
+              {address ? truncateAddress(address) : "Connect Wallet"}
             </Button>
           </div>
         </div>
