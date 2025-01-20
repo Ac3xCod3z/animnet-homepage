@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Wallet2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useAccount } from 'wagmi';
 
 export const Navbar = () => {
   const { session, connectWallet, disconnectWallet } = useAuth();
+  const { address } = useAccount();
 
   const handleWalletClick = async () => {
     if (session) {
@@ -11,6 +13,11 @@ export const Navbar = () => {
     } else {
       await connectWallet();
     }
+  };
+
+  const truncateAddress = (address: string) => {
+    if (!address) return '';
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
   };
 
   return (
@@ -34,7 +41,7 @@ export const Navbar = () => {
               onClick={handleWalletClick}
             >
               <Wallet2 className="mr-2 h-4 w-4" />
-              {session ? "Disconnect Wallet" : "Connect Wallet"}
+              {session && address ? truncateAddress(address) : "Connect Wallet"}
             </Button>
           </div>
         </div>
