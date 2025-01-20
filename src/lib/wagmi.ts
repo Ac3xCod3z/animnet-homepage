@@ -20,7 +20,6 @@ export const config = createConfig({
       options: {
         name: 'Injected',
         shimDisconnect: true,
-        shimChainChangedDisconnect: true,
       },
     })
   ],
