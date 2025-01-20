@@ -55,7 +55,7 @@ const initializeWalletConnect = async () => {
             name: 'AnimNet',
             description: 'AnimNet Web3 Application',
             url: window.location.origin,
-            icons: [`${window.location.origin}/favicon.ico`],
+            icons: [`${window.location.origin}/favicon.ico`].map(url => url.toString())
           },
         },
       })
