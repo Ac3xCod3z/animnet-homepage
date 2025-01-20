@@ -1,45 +1,25 @@
-import { useToast } from "@/components/ui/use-toast";
 import { useConnect, useDisconnect } from 'wagmi';
-import { supabase } from "@/integrations/supabase/client";
+import { showWalletNotification } from "@/utils/walletNotifications";
+import { useWalletAddressUpdate } from "./useWalletAddressUpdate";
+import { useWalletConnectionStatus } from "./useWalletConnectionStatus";
 
 export const useWalletConnection = (userId: string | undefined) => {
-  const { toast } = useToast();
-  const { connectAsync, connectors, status } = useConnect();
+  const { connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
-
-  const updateWalletAddress = async (address: string) => {
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ wallet_address: address })
-        .eq('id', userId);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error updating wallet address:', error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to update wallet address",
-      });
-    }
-  };
+  const { updateWalletAddress } = useWalletAddressUpdate(userId);
+  const { isConnected, getDefaultConnector } = useWalletConnectionStatus();
 
   const connectWallet = async (): Promise<void> => {
     try {
       console.log("Attempting to connect wallet...");
       
-      // Check if already connected
-      if (status === 'success') {
+      if (isConnected) {
         console.log("Wallet is already connected");
-        toast({
-          title: "Info",
-          description: "Wallet is already connected",
-        });
+        showWalletNotification.alreadyConnected();
         return;
       }
 
-      const connector = connectors[0];
+      const connector = getDefaultConnector();
       const result = await connectAsync({ connector });
       
       if (!result?.account) {
@@ -47,36 +27,21 @@ export const useWalletConnection = (userId: string | undefined) => {
       }
 
       console.log("Wallet connected successfully:", result.account);
-      toast({
-        title: "Success",
-        description: "Wallet connected successfully",
-      });
+      showWalletNotification.connectionSuccess();
     } catch (error: any) {
       console.error("Error connecting wallet:", error);
       
       if (error.name === 'UserRejectedRequestError') {
-        toast({
-          title: "Connection Cancelled",
-          description: "You cancelled the wallet connection request",
-          variant: "default"
-        });
+        showWalletNotification.connectionCancelled();
         return;
       }
 
       if (error.name === 'ConnectorAlreadyConnectedError') {
-        toast({
-          title: "Already Connected",
-          description: "Wallet is already connected",
-          variant: "default"
-        });
+        showWalletNotification.alreadyConnected();
         return;
       }
 
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to connect wallet. Please try again.",
-      });
+      showWalletNotification.connectionError();
       throw error;
     }
   };
@@ -87,26 +52,14 @@ export const useWalletConnection = (userId: string | undefined) => {
       await disconnectAsync();
       
       if (userId) {
-        const { error } = await supabase
-          .from('profiles')
-          .update({ wallet_address: null })
-          .eq('id', userId);
-
-        if (error) throw error;
+        await updateWalletAddress(null);
       }
       
       console.log("Wallet disconnected successfully");
-      toast({
-        title: "Success",
-        description: "Wallet disconnected successfully",
-      });
+      showWalletNotification.disconnectionSuccess();
     } catch (error) {
       console.error("Error disconnecting wallet:", error);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Failed to disconnect wallet. Please try again.",
-      });
+      showWalletNotification.disconnectionError();
       throw error;
     }
   };
