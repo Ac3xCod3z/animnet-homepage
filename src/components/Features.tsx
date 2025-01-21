@@ -31,7 +31,9 @@ export const Features = () => {
           {/* Large Panel */}
           <div className="bg-black/90 p-6 relative row-span-2 transform skew-y-1">
             <div className="absolute top-2 right-2">
-              <features[0].icon className="w-8 h-8 text-blue-400 opacity-50" />
+              {React.createElement(features[0].icon, { 
+                className: "w-8 h-8 text-blue-400 opacity-50" 
+              })}
             </div>
             <div className="mt-8">
               <h3 className="text-xl font-bold mb-3 text-white">{features[0].title}</h3>
@@ -42,7 +44,9 @@ export const Features = () => {
           {/* Medium Panel */}
           <div className="bg-black/90 p-6 relative col-span-2 transform -skew-x-1">
             <div className="absolute top-2 right-2">
-              <features[1].icon className="w-8 h-8 text-blue-400 opacity-50" />
+              {React.createElement(features[1].icon, { 
+                className: "w-8 h-8 text-blue-400 opacity-50" 
+              })}
             </div>
             <div className="mt-8">
               <h3 className="text-xl font-bold mb-3 text-white">{features[1].title}</h3>
@@ -53,7 +57,9 @@ export const Features = () => {
           {/* Small Panel */}
           <div className="bg-black/90 p-6 relative transform skew-x-1 md:col-start-2 md:col-span-2">
             <div className="absolute top-2 right-2">
-              <features[2].icon className="w-8 h-8 text-blue-400 opacity-50" />
+              {React.createElement(features[2].icon, { 
+                className: "w-8 h-8 text-blue-400 opacity-50" 
+              })}
             </div>
             <div className="mt-8">
               <h3 className="text-xl font-bold mb-3 text-white">{features[2].title}</h3>
