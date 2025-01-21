@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { WagmiConfig } from 'wagmi';
 import { config } from '@/lib/wagmi';
 import Index from "./pages/Index";
+import Redeem from "./pages/Redeem";
 
 const queryClient = new QueryClient();
 
@@ -20,6 +21,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/redeem" element={<Redeem />} />
             </Routes>
           </BrowserRouter>
         </AuthProvider>

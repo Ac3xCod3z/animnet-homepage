@@ -1,5 +1,7 @@
 import React from 'react';
 import { Shield, Zap, Users } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
+import { Button } from './ui/button';
 
 const features = [
   {
@@ -20,6 +22,8 @@ const features = [
 ];
 
 export const Features = () => {
+  const navigate = useNavigate();
+
   return (
     <section id="features" className="py-12 glass">
       <div className="container mx-auto px-4">
@@ -28,24 +32,27 @@ export const Features = () => {
             Why Choose AnimNet
           </span>
         </h2>
-        <div className="grid grid-cols-12 gap-4 h-[400px]"> {/* Reduced height from 600px to 400px */}
-          {/* Large Left Panel - Angled Top */}
-          <div className="col-span-5 row-span-2 relative transform hover:scale-[1.02] transition-transform duration-300">
+        <div className="grid grid-cols-12 gap-4 h-[400px]">
+          {/* Clickable Left Panel - Redeem Code */}
+          <div 
+            onClick={() => navigate('/redeem')}
+            className="col-span-5 row-span-2 relative transform hover:scale-[1.02] transition-transform duration-300 cursor-pointer"
+          >
             <div className="absolute inset-0" style={{
               clipPath: 'polygon(0 0, 100% 30px, 100% 100%, 0 100%)'
             }}>
-              <div className="absolute inset-0 bg-[#222222] border border-gray-800" /> {/* Dark background added */}
+              <div className="absolute inset-0 bg-[#222222] border border-gray-800" />
               <div className="absolute inset-0 bg-gradient-to-br from-crimson/10 to-transparent" />
-              <div className="p-6 mt-8">
-                <div className="absolute top-2 right-2">
-                  {React.createElement(features[0].icon, { 
-                    className: "w-6 h-6 text-crimson opacity-50" 
-                  })}
-                </div>
-                <div className="mt-4">
-                  <h3 className="text-lg font-bold mb-2 text-white font-orbitron">{features[0].title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed font-orbitron">{features[0].description}</p>
-                </div>
+              <div className="p-6 mt-8 flex flex-col items-start">
+                <h3 className="text-2xl font-bold mb-2 text-white font-orbitron">Redeem Code</h3>
+                <p className="text-gray-400 text-sm leading-relaxed font-orbitron mb-4">
+                  If you found a GTD code you can redeem it here
+                </p>
+                <Button 
+                  className="bg-crimson hover:bg-crimson/90 text-white font-orbitron"
+                >
+                  Enter
+                </Button>
               </div>
             </div>
           </div>
@@ -55,7 +62,7 @@ export const Features = () => {
             <div className="absolute inset-0" style={{
               clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 85%)'
             }}>
-              <div className="absolute inset-0 bg-[#222222] border border-gray-800" /> {/* Dark background added */}
+              <div className="absolute inset-0 bg-[#222222] border border-gray-800" />
               <div className="absolute inset-0 bg-gradient-to-tr from-crimson/10 to-transparent" />
               <div className="p-6">
                 <div className="absolute top-2 right-2">
@@ -76,7 +83,7 @@ export const Features = () => {
             <div className="absolute inset-0" style={{
               clipPath: 'polygon(0 15%, 100% 0, 100% 100%, 0 100%)'
             }}>
-              <div className="absolute inset-0 bg-[#222222] border border-gray-800" /> {/* Dark background added */}
+              <div className="absolute inset-0 bg-[#222222] border border-gray-800" />
               <div className="absolute inset-0 bg-gradient-to-bl from-crimson/10 to-transparent" />
               <div className="p-6">
                 <div className="absolute top-2 right-2">
