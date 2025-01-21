@@ -6,7 +6,7 @@ export const MangaPanel = () => {
   return (
     <div className="w-full max-w-[400px] ml-16 lg:ml-32">
       {/* Top Panel */}
-      <div className="glass clip-diagonal-top p-8 relative mb-1 min-h-[180px] bg-[#000000e6]">
+      <div className="glass p-8 relative mb-0 min-h-[180px] bg-[#000000e6] rounded-t-lg">
         <div className="space-y-4">
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-crimson font-orbitron">Enter Code</h2>
@@ -19,10 +19,19 @@ export const MangaPanel = () => {
             className="bg-[#111111] border-[#333333] text-white placeholder:text-[#555555] font-orbitron"
           />
         </div>
+        {/* Diagonal split line */}
+        <div className="absolute bottom-0 left-0 w-full h-8 overflow-hidden">
+          <div 
+            className="w-full h-[2px] bg-crimson transform rotate-[-4deg] translate-y-4"
+            style={{
+              boxShadow: '0 0 8px rgba(218, 55, 60, 0.6)'
+            }}
+          />
+        </div>
       </div>
       
       {/* Bottom Panel */}
-      <div className="glass clip-diagonal-bottom p-8 relative min-h-[120px] bg-[#000000e6]">
+      <div className="glass p-8 relative min-h-[120px] bg-[#000000e6] rounded-b-lg">
         <div className="space-y-4">
           <Button 
             className="w-full group bg-crimson hover:bg-[#b22d31] text-white font-orbitron"
