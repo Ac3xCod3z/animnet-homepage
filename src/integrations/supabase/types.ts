@@ -70,14 +70,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      check_and_redeem_code: {
-        Args: {
-          p_code: string
-          p_user_id: string
-          p_wallet_address: string
-        }
-        Returns: Json
-      }
+      check_and_redeem_code:
+        | {
+            Args: {
+              p_code: string
+              p_user_id: string
+              p_wallet_address: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_code: string
+              p_wallet_address: string
+            }
+            Returns: Json
+          }
     }
     Enums: {
       [_ in never]: never
