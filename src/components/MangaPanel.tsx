@@ -7,6 +7,12 @@ import { useAccount } from 'wagmi';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+interface RedemptionResponse {
+  success: boolean;
+  message: string;
+  remainingRedemptions?: number;
+}
+
 export const MangaPanel = () => {
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +51,7 @@ export const MangaPanel = () => {
     setIsLoading(true);
     try {
       console.log("Attempting to redeem code:", code);
-      const { data, error } = await supabase.rpc('check_and_redeem_code', {
+      const { data, error } = await supabase.rpc<RedemptionResponse>('check_and_redeem_code', {
         p_code: code.trim(),
         p_user_id: session.user.id,
         p_wallet_address: address
