@@ -77,11 +77,12 @@ const initializeWalletConnect = async () => {
         chains,
         themeMode: 'dark',
         defaultChain: mainnet,
-        featuredWalletIds: ['c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96'],
-        includeWalletIds: [
-          'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
-          '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'
-        ]
+        themeVariables: {
+          // Using the correct theme variable names
+          '--w3m-color-fg-1': '#ffffff',
+          '--w3m-color-bg-1': '#1a1b1f',
+          '--w3m-font-family': 'Orbitron, sans-serif'
+        }
       });
       console.log('Web3Modal initialized successfully');
     }
