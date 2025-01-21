@@ -42,47 +42,106 @@ export const MangaPanel = () => {
 
     setIsLoading(true);
     try {
-      console.log("Attempting to redeem code:", trimmedCode);
-      console.log("Using wallet address:", address);
+      console.log("Starting redemption process...");
+      console.log("Code:", trimmedCode);
+      console.log("Wallet address:", address);
       
-      const { data, error } = await supabase.functions.invoke<RedemptionResponse>('check_and_redeem_code', {
-        body: {
-          code: trimmedCode,
-          walletAddress: address
-        }
-      });
+      // First, let's check if the code exists
+      const { data: codeData, error: codeError } = await supabase
+        .from('redemption_codes')
+        .select('*')
+        .eq('code', trimmedCode)
+        .single();
 
-      console.log("Redemption response:", data);
-      console.log("Redemption error:", error);
+      console.log("Code lookup result:", codeData);
+      console.log("Code lookup error:", codeError);
 
-      if (error) {
-        console.error("Supabase function error:", error);
-        throw error;
-      }
-
-      if (!data?.success) {
-        console.log("Redemption failed:", data?.message);
+      if (codeError || !codeData) {
+        console.log("Invalid code or code not found");
         toast({
           title: "Error",
-          description: data?.message || "Failed to redeem code",
+          description: "Invalid redemption code",
           variant: "destructive",
         });
         return;
       }
 
-      // Update redemption count display
-      if (data.remainingRedemptions !== undefined) {
-        setRedemptionCount(`${5 - data.remainingRedemptions}/5`);
+      // Check if user has already redeemed
+      const { data: existingRedemption, error: redemptionError } = await supabase
+        .from('code_redemptions')
+        .select('*')
+        .eq('code_id', codeData.id)
+        .eq('wallet_address', address)
+        .single();
+
+      console.log("Existing redemption check:", existingRedemption);
+      console.log("Redemption check error:", redemptionError);
+
+      if (existingRedemption) {
+        console.log("Code already redeemed by this wallet");
+        toast({
+          title: "Error",
+          description: "You have already redeemed this code",
+          variant: "destructive",
+        });
+        return;
       }
 
+      // Check if max redemptions reached
+      if (codeData.total_redemptions >= codeData.max_redemptions) {
+        console.log("Max redemptions reached");
+        toast({
+          title: "Error",
+          description: "This code has reached its maximum number of redemptions",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Insert redemption
+      const { error: insertError } = await supabase
+        .from('code_redemptions')
+        .insert([
+          {
+            code_id: codeData.id,
+            wallet_address: address
+          }
+        ]);
+
+      console.log("Redemption insert error:", insertError);
+
+      if (insertError) {
+        console.error("Error inserting redemption:", insertError);
+        throw insertError;
+      }
+
+      // Update redemption count
+      const { error: updateError } = await supabase
+        .from('redemption_codes')
+        .update({ 
+          total_redemptions: codeData.total_redemptions + 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', codeData.id);
+
+      console.log("Update redemption count error:", updateError);
+
+      if (updateError) {
+        console.error("Error updating redemption count:", updateError);
+        throw updateError;
+      }
+
+      // Update UI
+      setRedemptionCount(`${codeData.total_redemptions + 1}/${codeData.max_redemptions}`);
+      
       toast({
         title: "Success",
-        description: `${data.message}. ${data.remainingRedemptions} redemptions remaining.`,
+        description: `Code redeemed successfully. ${codeData.max_redemptions - (codeData.total_redemptions + 1)} redemptions remaining.`,
       });
 
       setCode("");
     } catch (error) {
-      console.error("Error redeeming code:", error);
+      console.error("Error in redemption process:", error);
       toast({
         title: "Error",
         description: "Failed to redeem code. Please try again.",
