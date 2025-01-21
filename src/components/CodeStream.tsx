@@ -16,6 +16,8 @@ export const CodeStream = () => {
     const sketch = (p: p5) => {
       const streams: Stream[] = [];
       const symbolSize = 14;
+      const explosionForce = 15; // Force applied when mouse collides
+      const explosionRadius = 100; // Radius of effect around mouse
       
       class Symbol {
         x: number;
@@ -24,6 +26,9 @@ export const CodeStream = () => {
         speed: number;
         opacity: number;
         first: boolean;
+        velocityX: number;
+        velocityY: number;
+        isDisrupted: boolean;
         
         constructor(x: number, y: number, speed: number, first: boolean) {
           this.x = x;
@@ -32,6 +37,9 @@ export const CodeStream = () => {
           this.speed = speed;
           this.first = first;
           this.opacity = first ? 255 : p.random(70, 100);
+          this.velocityX = 0;
+          this.velocityY = 0;
+          this.isDisrupted = false;
           this.setToRandomSymbol();
         }
 
@@ -46,11 +54,39 @@ export const CodeStream = () => {
           this.value = charset[Math.floor(p.random(charset.length))];
         }
 
-        rain() {
-          if (this.y >= p.height) {
-            this.y = 0;
+        disrupt(mouseX: number, mouseY: number) {
+          const dx = this.x - mouseX;
+          const dy = this.y - mouseY;
+          const distance = p.sqrt(dx * dx + dy * dy);
+          
+          if (distance < explosionRadius) {
+            this.isDisrupted = true;
+            const angle = p.atan2(dy, dx);
+            const force = p.map(distance, 0, explosionRadius, explosionForce, 0);
+            this.velocityX = p.cos(angle) * force;
+            this.velocityY = p.sin(angle) * force;
+          }
+        }
+
+        update() {
+          if (this.isDisrupted) {
+            this.x += this.velocityX;
+            this.y += this.velocityY;
+            this.velocityX *= 0.95; // Add drag
+            this.velocityY *= 0.95;
+            
+            // Reset if off screen
+            if (this.x < 0 || this.x > p.width || this.y < 0 || this.y > p.height) {
+              this.isDisrupted = false;
+              this.velocityX = 0;
+              this.velocityY = 0;
+            }
           } else {
-            this.y += this.speed;
+            if (this.y >= p.height) {
+              this.y = 0;
+            } else {
+              this.y += this.speed;
+            }
           }
           
           if (p.random(1) < 0.1) {
@@ -60,9 +96,9 @@ export const CodeStream = () => {
 
         render() {
           if (this.first) {
-            p.fill(180, 255, 180, this.opacity);
+            p.fill(255, 255, 255, this.opacity); // White for first symbol
           } else {
-            p.fill(0, 255, 70, this.opacity);
+            p.fill(200, 200, 200, this.opacity); // Light gray for rest
           }
           p.text(this.value, this.x, this.y);
         }
@@ -90,10 +126,14 @@ export const CodeStream = () => {
           }
         }
 
+        disruptStream(mouseX: number, mouseY: number) {
+          this.symbols.forEach(symbol => symbol.disrupt(mouseX, mouseY));
+        }
+
         render() {
           this.symbols.forEach(symbol => {
             symbol.render();
-            symbol.rain();
+            symbol.update();
           });
         }
       }
@@ -116,6 +156,10 @@ export const CodeStream = () => {
       p.draw = () => {
         p.background(0, 150); // Creates trailing effect
         streams.forEach(stream => stream.render());
+      };
+
+      p.mouseMoved = () => {
+        streams.forEach(stream => stream.disruptStream(p.mouseX, p.mouseY));
       };
 
       p.windowResized = () => {
