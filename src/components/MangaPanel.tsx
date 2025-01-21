@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Send, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAccount } from 'wagmi';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Database } from "@/integrations/supabase/types";
 
 type RedemptionResponse = {
   success: boolean;
@@ -18,8 +16,7 @@ export const MangaPanel = () => {
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [redemptionCount, setRedemptionCount] = useState<string>("");
-  const { session } = useAuth();
-  const { address } = useAccount();
+  const { address } = useAuth();
   const { toast } = useToast();
 
   const handleSubmit = async () => {
@@ -27,16 +24,6 @@ export const MangaPanel = () => {
       toast({
         title: "Error",
         description: "Please connect your wallet first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (!session?.user?.id) {
-      // Changed order to check wallet first, then session
-      toast({
-        title: "Authentication Required",
-        description: "Please sign in with your email to redeem codes",
         variant: "destructive",
       });
       return;
@@ -54,13 +41,11 @@ export const MangaPanel = () => {
     setIsLoading(true);
     try {
       console.log("Attempting to redeem code:", code);
-      console.log("User session:", session?.user?.id);
       console.log("Wallet address:", address);
       
       const { data, error } = await supabase.functions.invoke<RedemptionResponse>('check_and_redeem_code', {
         body: {
           code: code.trim(),
-          userId: session.user.id,
           walletAddress: address
         }
       });

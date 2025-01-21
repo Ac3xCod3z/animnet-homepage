@@ -1,12 +1,10 @@
 import { useConnect, useDisconnect } from 'wagmi';
 import { showWalletNotification } from "@/utils/walletNotifications";
-import { useWalletAddressUpdate } from "./useWalletAddressUpdate";
 import { useWalletConnectionStatus } from "./useWalletConnectionStatus";
 
-export const useWalletConnection = (userId: string | undefined) => {
+export const useWalletConnection = (_userId: string | undefined) => {
   const { connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
-  const { updateWalletAddress } = useWalletAddressUpdate(userId);
   const { isConnected, getDefaultConnector } = useWalletConnectionStatus();
 
   const connectWallet = async (): Promise<void> => {
@@ -50,11 +48,6 @@ export const useWalletConnection = (userId: string | undefined) => {
     try {
       console.log("Attempting to disconnect wallet...");
       await disconnectAsync();
-      
-      if (userId) {
-        await updateWalletAddress(null);
-      }
-      
       console.log("Wallet disconnected successfully");
       showWalletNotification.disconnectionSuccess();
     } catch (error) {
@@ -66,7 +59,6 @@ export const useWalletConnection = (userId: string | undefined) => {
 
   return {
     connectWallet,
-    disconnectWallet,
-    updateWalletAddress
+    disconnectWallet
   };
 };

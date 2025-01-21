@@ -1,12 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Wallet2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
-import { useAccount, useDisconnect } from 'wagmi';
 
 export const Navbar = () => {
-  const { session, connectWallet, disconnectWallet } = useAuth();
-  const { address } = useAccount();
-  const { disconnect } = useDisconnect();
+  const { address, connectWallet, disconnectWallet } = useAuth();
 
   const handleWalletClick = async () => {
     try {
@@ -15,7 +12,6 @@ export const Navbar = () => {
       if (address) {
         console.log("Attempting to disconnect wallet");
         await disconnectWallet();
-        disconnect();
       } else {
         console.log("Attempting to connect wallet");
         await connectWallet();

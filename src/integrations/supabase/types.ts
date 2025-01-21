@@ -14,21 +14,18 @@ export type Database = {
           code_id: string
           id: string
           redeemed_at: string
-          user_id: string
           wallet_address: string
         }
         Insert: {
           code_id: string
           id?: string
           redeemed_at?: string
-          user_id: string
           wallet_address: string
         }
         Update: {
           code_id?: string
           id?: string
           redeemed_at?: string
-          user_id?: string
           wallet_address?: string
         }
         Relationships: [
@@ -40,27 +37,6 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          id: string
-          updated_at: string
-          wallet_address: string | null
-        }
-        Insert: {
-          created_at?: string
-          id: string
-          updated_at?: string
-          wallet_address?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          updated_at?: string
-          wallet_address?: string | null
-        }
-        Relationships: []
       }
       redemption_codes: {
         Row: {
