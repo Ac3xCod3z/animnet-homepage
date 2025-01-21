@@ -6,17 +6,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useAccount } from 'wagmi';
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { Database } from "@/integrations/supabase/types";
 
-interface RedemptionResponse {
+type RedemptionResponse = {
   success: boolean;
   message: string;
   remainingRedemptions?: number;
-}
-
-interface RedemptionParams {
-  p_code: string;
-  p_user_id: string;
-  p_wallet_address: string;
 }
 
 export const MangaPanel = () => {
@@ -57,10 +52,12 @@ export const MangaPanel = () => {
     setIsLoading(true);
     try {
       console.log("Attempting to redeem code:", code);
-      const { data, error } = await supabase.rpc<RedemptionResponse, RedemptionParams>('check_and_redeem_code', {
-        p_code: code.trim(),
-        p_user_id: session.user.id,
-        p_wallet_address: address
+      const { data, error } = await supabase.functions.invoke<RedemptionResponse>('check_and_redeem_code', {
+        body: {
+          code: code.trim(),
+          userId: session.user.id,
+          walletAddress: address
+        }
       });
 
       console.log("Redemption response:", data);
@@ -69,10 +66,10 @@ export const MangaPanel = () => {
         throw error;
       }
 
-      if (!data.success) {
+      if (!data?.success) {
         toast({
           title: "Error",
-          description: data.message,
+          description: data?.message || "Failed to redeem code",
           variant: "destructive",
         });
         return;
