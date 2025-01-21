@@ -76,9 +76,9 @@ const initializeWalletConnect = async () => {
       themeMode: 'dark',
       defaultChain: mainnet,
       themeVariables: {
-        '--w3m-accent-color': '#da373c',
-        '--w3m-background-color': '#1a1b1f',
-        '--w3m-font-family': 'Orbitron, sans-serif'
+        '--w3m-accent': '#da373c',
+        '--w3m-background': '#1a1b1f',
+        '--w3m-font-family': 'Orbitron'
       }
     });
     console.log('Web3Modal initialized successfully');
