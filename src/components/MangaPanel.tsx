@@ -23,19 +23,20 @@ export const MangaPanel = () => {
   const { toast } = useToast();
 
   const handleSubmit = async () => {
-    if (!session?.user?.id) {
+    if (!address) {
       toast({
         title: "Error",
-        description: "Please sign in to redeem a code",
+        description: "Please connect your wallet first",
         variant: "destructive",
       });
       return;
     }
 
-    if (!address) {
+    if (!session?.user?.id) {
+      // Changed order to check wallet first, then session
       toast({
-        title: "Error",
-        description: "Please connect your wallet to redeem a code",
+        title: "Authentication Required",
+        description: "Please sign in with your email to redeem codes",
         variant: "destructive",
       });
       return;
@@ -53,6 +54,9 @@ export const MangaPanel = () => {
     setIsLoading(true);
     try {
       console.log("Attempting to redeem code:", code);
+      console.log("User session:", session?.user?.id);
+      console.log("Wallet address:", address);
+      
       const { data, error } = await supabase.functions.invoke<RedemptionResponse>('check_and_redeem_code', {
         body: {
           code: code.trim(),
