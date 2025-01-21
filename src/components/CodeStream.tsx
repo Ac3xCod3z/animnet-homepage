@@ -18,6 +18,7 @@ export const CodeStream = () => {
       const symbolSize = 14;
       const explosionForce = 15; // Force applied when mouse collides
       const explosionRadius = 100; // Radius of effect around mouse
+      const resetDelay = 2000; // Time in ms before symbols start falling back
       
       class Symbol {
         x: number;
@@ -29,17 +30,23 @@ export const CodeStream = () => {
         velocityX: number;
         velocityY: number;
         isDisrupted: boolean;
+        originalX: number;
+        originalSpeed: number;
+        disruptionTime: number;
         
         constructor(x: number, y: number, speed: number, first: boolean) {
           this.x = x;
           this.y = y;
+          this.originalX = x; // Store original position
           this.value = '';
           this.speed = speed;
+          this.originalSpeed = speed;
           this.first = first;
           this.opacity = first ? 255 : p.random(70, 100);
           this.velocityX = 0;
           this.velocityY = 0;
           this.isDisrupted = false;
+          this.disruptionTime = 0;
           this.setToRandomSymbol();
         }
 
@@ -61,6 +68,7 @@ export const CodeStream = () => {
           
           if (distance < explosionRadius) {
             this.isDisrupted = true;
+            this.disruptionTime = p.millis();
             const angle = p.atan2(dy, dx);
             const force = p.map(distance, 0, explosionRadius, explosionForce, 0);
             this.velocityX = p.cos(angle) * force;
@@ -70,16 +78,45 @@ export const CodeStream = () => {
 
         update() {
           if (this.isDisrupted) {
+            const currentTime = p.millis();
+            
+            // Check if it's time to start falling back
+            if (currentTime - this.disruptionTime > resetDelay) {
+              // Start moving back to original position
+              const dx = this.originalX - this.x;
+              const dy = 0 - this.y; // Always fall from current position
+              const distance = p.sqrt(dx * dx + dy * dy);
+              
+              if (distance < 5) {
+                // Close enough to original stream, reset completely
+                this.isDisrupted = false;
+                this.x = this.originalX;
+                this.velocityX = 0;
+                this.velocityY = this.originalSpeed;
+              } else {
+                // Gradually move back to stream
+                this.velocityX = dx * 0.05;
+                this.velocityY = this.originalSpeed * 1.5; // Fall slightly faster than normal
+              }
+            }
+            
+            // Apply current velocities
             this.x += this.velocityX;
             this.y += this.velocityY;
-            this.velocityX *= 0.95; // Add drag
-            this.velocityY *= 0.95;
+            
+            // Add drag only during initial explosion
+            if (currentTime - this.disruptionTime <= resetDelay) {
+              this.velocityX *= 0.95;
+              this.velocityY *= 0.95;
+            }
             
             // Reset if off screen
             if (this.x < 0 || this.x > p.width || this.y < 0 || this.y > p.height) {
+              this.y = 0;
+              this.x = this.originalX;
               this.isDisrupted = false;
               this.velocityX = 0;
-              this.velocityY = 0;
+              this.velocityY = this.originalSpeed;
             }
           } else {
             if (this.y >= p.height) {
