@@ -7,6 +7,12 @@ export const CodeStream = () => {
   useEffect(() => {
     if (!sketchRef.current) return;
 
+    // Remove any existing canvas
+    const existingCanvas = sketchRef.current.querySelector('canvas');
+    if (existingCanvas) {
+      existingCanvas.remove();
+    }
+
     const sketch = (p: p5) => {
       const particles: Particle[] = [];
       const numParticles = 100;
@@ -68,9 +74,9 @@ export const CodeStream = () => {
       }
 
       p.setup = () => {
-        const canvas = p.createCanvas(p.windowWidth, p.windowHeight);
-        canvas.position(0, 0);
-        canvas.style('z-index', '-1');
+        console.log('Setting up p5 sketch...'); // Debug log
+        const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
+        canvas.parent(sketchRef.current!);
         
         for (let i = 0; i < numParticles; i++) {
           particles.push(new Particle());
@@ -88,13 +94,23 @@ export const CodeStream = () => {
       };
 
       p.windowResized = () => {
-        p.resizeCanvas(p.windowWidth, p.windowHeight);
+        p.resizeCanvas(window.innerWidth, window.innerHeight);
       };
     };
 
     const p5Instance = new p5(sketch, sketchRef.current);
-    return () => p5Instance.remove();
+    
+    return () => {
+      console.log('Cleaning up p5 sketch...'); // Debug log
+      p5Instance.remove();
+    };
   }, []);
 
-  return <div ref={sketchRef} className="absolute inset-0" />;
+  return (
+    <div 
+      ref={sketchRef} 
+      className="fixed inset-0 w-full h-full"
+      style={{ zIndex: 0 }}
+    />
+  );
 };
