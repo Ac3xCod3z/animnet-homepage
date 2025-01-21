@@ -43,6 +43,10 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
+    background-image: url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1920');
+    background-size: cover;
+    background-attachment: fixed;
+    background-position: center;
   }
 }
 
@@ -68,4 +72,32 @@
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.manga-text {
+  text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+  letter-spacing: 0.05em;
+}
+
+.manga-border {
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 2px #000;
+}
+
+.manga-gradient {
+  background: linear-gradient(45deg, #9b87f5, #7E69AB, #0FA0CE);
+  background-size: 200% 200%;
+  animation: gradientBG 5s ease infinite;
+}
+
+@keyframes gradientBG {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
