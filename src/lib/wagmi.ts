@@ -78,9 +78,8 @@ const initializeWalletConnect = async () => {
         themeMode: 'dark',
         defaultChain: mainnet,
         themeVariables: {
-          // Using the correct theme variable names
-          '--w3m-color-fg-1': '#ffffff',
-          '--w3m-color-bg-1': '#1a1b1f',
+          '--w3m-accent': '#da373c',
+          '--w3m-background': '#1a1b1f',
           '--w3m-font-family': 'Orbitron, sans-serif'
         }
       });
