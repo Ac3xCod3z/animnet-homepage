@@ -69,30 +69,27 @@ const initializeWalletConnect = async () => {
     );
 
     // Initialize Web3Modal
-    if (typeof window !== 'undefined') {
-      console.log('Initializing Web3Modal...');
-      createWeb3Modal({
-        wagmiConfig: config,
-        projectId,
-        chains,
-        themeMode: 'dark',
-        defaultChain: mainnet,
-        themeVariables: {
-          '--w3m-accent-color': '#da373c',
-          '--w3m-background-color': '#1a1b1f',
-          '--w3m-font-family': 'Orbitron, sans-serif'
-        }
-      });
-      console.log('Web3Modal initialized successfully');
-    }
+    createWeb3Modal({
+      wagmiConfig: config,
+      projectId,
+      chains,
+      themeMode: 'dark',
+      defaultChain: mainnet,
+      themeVariables: {
+        '--w3m-accent': '#da373c',
+        '--w3m-background-color-1': '#1a1b1f',
+        '--w3m-font-family': 'Orbitron, sans-serif'
+      }
+    });
+    console.log('Web3Modal initialized successfully');
   } catch (error) {
     console.error('Failed to initialize WalletConnect:', error);
   }
 };
 
-// Start initialization immediately
+// Initialize immediately in browser environment
 if (typeof window !== 'undefined') {
-  initializeWalletConnect();
+  initializeWalletConnect().catch(console.error);
 }
 
 export { chains };
