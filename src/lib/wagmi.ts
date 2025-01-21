@@ -44,6 +44,9 @@ const initializeWalletConnect = async () => {
     const projectId = data.projectId;
     console.log('Successfully retrieved WalletConnect project ID');
 
+    const baseUrl = window.location.origin.replace(/\/$/, '');
+    const iconUrl = new URL('/favicon.ico', baseUrl).toString();
+
     // Add WalletConnect connector with explicit connection requirement
     config.connectors.push(
       new WalletConnectConnector({
@@ -54,8 +57,8 @@ const initializeWalletConnect = async () => {
           metadata: {
             name: 'AnimNet',
             description: 'AnimNet Web3 Application',
-            url: window.location.origin,
-            icons: [`${window.location.origin}/favicon.ico`].map(url => url.toString())
+            url: baseUrl,
+            icons: [iconUrl]
           },
         },
       })
