@@ -19,7 +19,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
 
     const sketch = (p: p5) => {
       const symbols: Symbol[] = [];
-      const symbolSize = 60; // Larger size for the counter
+      const symbolSize = 120; // Increased size for better visibility
       
       class Symbol {
         x: number;
@@ -67,7 +67,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
       }
 
       p.setup = () => {
-        const canvas = p.createCanvas(200, 100);
+        const canvas = p.createCanvas(400, 200); // Increased canvas size
         canvas.parent(sketchRef.current!);
         p.background(0, 0);
         p.textSize(symbolSize);
@@ -98,7 +98,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
   return (
     <div 
       ref={sketchRef} 
-      className="w-[200px] h-[100px] mx-auto"
+      className="w-[400px] h-[200px] mx-auto" // Increased container size
       style={{ zIndex: 10 }}
     />
   );
