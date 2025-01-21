@@ -11,9 +11,9 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
-// Create config
+// Create wagmi config
 export const config = createConfig({
-  autoConnect: true, // Enable autoConnect to prevent account view errors
+  autoConnect: true,
   connectors: [
     new InjectedConnector({
       chains,
@@ -76,8 +76,8 @@ const initializeWalletConnect = async () => {
       themeMode: 'dark',
       defaultChain: mainnet,
       themeVariables: {
-        '--w3m-accent': '#da373c',
-        '--w3m-background': '#1a1b1f',
+        '--w3m-color-fg-1': '#da373c',
+        '--w3m-color-bg-1': '#1a1b1f',
         '--w3m-font-family': 'Orbitron'
       }
     });
