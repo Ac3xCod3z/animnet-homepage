@@ -2,7 +2,7 @@ import { useConnect, useDisconnect } from 'wagmi';
 import { showWalletNotification } from "@/utils/walletNotifications";
 import { useWalletConnectionStatus } from "./useWalletConnectionStatus";
 
-export const useWalletConnection = (_userId: string | undefined) => {
+export const useWalletConnection = () => {
   const { connectAsync } = useConnect();
   const { disconnectAsync } = useDisconnect();
   const { isConnected, getDefaultConnector } = useWalletConnectionStatus();
