@@ -11,7 +11,7 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
-// Create config with InjectedConnector that requires explicit connection
+// Create config
 export const config = createConfig({
   autoConnect: false,
   connectors: [
@@ -21,7 +21,7 @@ export const config = createConfig({
         name: 'Injected',
         shimDisconnect: true,
       },
-    })
+    }),
   ],
   publicClient,
 });
@@ -51,7 +51,7 @@ const initializeWalletConnect = async () => {
     console.log('Base URL:', baseUrl);
     console.log('Icon URL:', iconUrl);
 
-    // Add WalletConnect connector with enhanced options
+    // Add WalletConnect connector
     config.connectors.push(
       new WalletConnectConnector({
         chains,
@@ -68,7 +68,7 @@ const initializeWalletConnect = async () => {
       })
     );
 
-    // Initialize Web3Modal with enhanced features
+    // Initialize Web3Modal
     if (typeof window !== 'undefined') {
       console.log('Initializing Web3Modal...');
       createWeb3Modal({
