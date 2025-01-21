@@ -70,9 +70,9 @@ if (!projectId) {
         chains,
         themeMode: 'dark',
         themeVariables: {
+          '--w3m-accent': '#DC143C',
+          '--w3m-background': '#1a1a1a',
           '--w3m-font-family': 'Orbitron, sans-serif',
-          '--w3m-accent-color': '#DC143C',
-          '--w3m-background-color': '#1a1a1a',
         },
       });
       console.log('Web3Modal initialized successfully');
