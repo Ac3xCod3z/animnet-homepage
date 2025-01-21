@@ -148,7 +148,7 @@ export const CodeStream = () => {
 
         constructor(x: number) {
           this.totalSymbols = p.round(p.random(5, 35));
-          this.speed = p.random(5, 10);
+          this.speed = p.random(3, 7); // Reduced from 5-10 to 3-7 for slower movement
           this.symbols = [];
 
           for (let i = 0; i < this.totalSymbols; i++) {
