@@ -13,6 +13,7 @@ import {
 export const MangaPanel = () => {
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [redemptionCount, setRedemptionCount] = useState<string>("");
   const { address } = useAuth();
   const { toast } = useToast();
 
@@ -37,11 +38,12 @@ export const MangaPanel = () => {
       const hasRedeemed = await checkExistingRedemption(codeData.id, address);
       if (hasRedeemed) return;
 
-      await processRedemption(codeData, address);
+      const newRedemptionCount = await processRedemption(codeData, address);
+      setRedemptionCount(newRedemptionCount);
       
       toast({
         title: "Success",
-        description: "Code redeemed successfully!",
+        description: `Code redeemed successfully. ${codeData.max_redemptions - (codeData.total_redemptions + 1)} redemptions remaining.`,
       });
 
       setCode("");
@@ -62,6 +64,7 @@ export const MangaPanel = () => {
       <TopPanel 
         code={code}
         setCode={setCode}
+        redemptionCount={redemptionCount}
       />
       <BottomPanel 
         isLoading={isLoading}

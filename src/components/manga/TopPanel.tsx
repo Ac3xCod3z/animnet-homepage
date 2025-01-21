@@ -3,9 +3,10 @@ import { Input } from "@/components/ui/input";
 interface TopPanelProps {
   code: string;
   setCode: (code: string) => void;
+  redemptionCount: string;
 }
 
-export const TopPanel = ({ code, setCode }: TopPanelProps) => (
+export const TopPanel = ({ code, setCode, redemptionCount }: TopPanelProps) => (
   <div 
     className="glass relative min-h-[180px] bg-[#000000e6] border border-[#333333] shadow-lg"
     style={{
@@ -19,6 +20,11 @@ export const TopPanel = ({ code, setCode }: TopPanelProps) => (
         <h2 className="text-2xl font-bold text-crimson font-orbitron tracking-wider">Enter Code</h2>
         <p className="text-sm text-[#8E9196] tracking-wide">
           Enter your redemption code below
+          {redemptionCount && (
+            <span className="ml-2 text-crimson font-orbitron">
+              ({redemptionCount} redeemed)
+            </span>
+          )}
         </p>
       </div>
       <Input 
