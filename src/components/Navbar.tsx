@@ -7,11 +7,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useWeb3Modal as useWeb3ModalWagmi } from '@web3modal/wagmi/react';
+import { useWeb3Modal } from '@web3modal/wagmi/react';
 
 export const Navbar = () => {
   const { address, connectWallet, disconnectWallet } = useAuth();
-  const { open } = useWeb3ModalWagmi();
+  const { open } = useWeb3Modal();
 
   const handleWalletClick = async () => {
     try {

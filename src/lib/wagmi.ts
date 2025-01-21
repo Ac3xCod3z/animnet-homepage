@@ -3,7 +3,7 @@ import { mainnet, polygon } from 'wagmi/chains';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { publicProvider } from 'wagmi/providers/public';
-import { createWeb3Modal } from '@web3modal/wagmi';
+import { createWeb3Modal } from '@web3modal/wagmi/react';
 import { supabase } from '@/integrations/supabase/client';
 
 const { chains, publicClient } = configureChains(
