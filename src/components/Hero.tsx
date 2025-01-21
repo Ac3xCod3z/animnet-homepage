@@ -18,6 +18,7 @@ export const Hero = ({ count }: HeroProps) => {
       const fontSize = 400; // Large size for the background number
       let targetPoints: p5.Vector[] = [];
       let transitionSymbols: Symbol[] = [];
+      let font: p5.Font;
       
       class Symbol {
         x: number;
@@ -82,16 +83,18 @@ export const Hero = ({ count }: HeroProps) => {
       }
 
       const createNumberPoints = (num: number) => {
+        if (!font) return [];
+        p.textFont(font);
         p.textSize(fontSize);
         p.textAlign(p.CENTER, p.CENTER);
         const points: p5.Vector[] = [];
-        const bbox = p.font.textBounds(num.toString(), p.width/2, p.height/2, fontSize);
+        const bbox = font.textBounds(num.toString(), p.width/2, p.height/2, fontSize);
         
         for (let x = 0; x < p.width; x += symbolSize) {
           for (let y = 0; y < p.height; y += symbolSize) {
             const px = x + symbolSize/2;
             const py = y + symbolSize/2;
-            if (p.font.textBounds(num.toString(), px, py, fontSize).contains(x, y)) {
+            if (font.textBounds(num.toString(), px, py, fontSize).contains(x, y)) {
               points.push(p.createVector(px, py));
             }
           }
@@ -99,10 +102,14 @@ export const Hero = ({ count }: HeroProps) => {
         return points;
       };
 
+      p.preload = () => {
+        font = p.loadFont('https://use.typekit.net/af/cee96b/00000000000000007735c5a6/30/a?primer=7cdcb44be4a7db8877ffa5c0007b8dd865b3bbc383831fe2ea177f62257a9191&fvd=n4&v=3');
+      };
+
       p.setup = () => {
         const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
         canvas.parent(canvasRef.current!);
-        p.textFont('Consolas');
+        p.textFont(font);
         p.textSize(symbolSize);
         
         // Create initial number points

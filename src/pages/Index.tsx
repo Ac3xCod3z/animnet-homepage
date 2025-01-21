@@ -7,7 +7,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Navbar />
-      <Hero />
+      <Hero count={5} /> {/* Pass initial count of 5 */}
       <Features />
       <Footer />
     </div>
