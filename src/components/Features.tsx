@@ -28,23 +28,25 @@ export const Features = () => {
             Why Choose AnimNet
           </span>
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[2px] bg-white/20 p-[2px]">
-          {/* Large Panel */}
-          <div className="bg-black/90 p-6 relative row-span-2 transform hover:scale-[1.02] transition-transform duration-300">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* First Panel - Diagonal Split */}
+          <div className="bg-black/90 p-6 relative transform hover:scale-[1.02] transition-transform duration-300 overflow-hidden rounded-lg">
+            <div className="absolute top-0 right-0 w-full h-full bg-crimson/10 clip-diagonal"></div>
             <div className="absolute top-2 right-2">
               {React.createElement(features[0].icon, { 
                 className: "w-8 h-8 text-crimson opacity-50" 
               })}
             </div>
-            <div className="mt-8">
+            <div className="mt-8 relative z-10">
               <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[0].title}</h3>
               <p className="text-gray-400 text-sm leading-relaxed font-orbitron">{features[0].description}</p>
             </div>
           </div>
           
-          {/* Right Top Panel - Diagonal Split */}
-          <div className="bg-black/90 p-6 relative col-span-2 transform hover:scale-[1.02] transition-transform duration-300 overflow-hidden">
-            <div className="absolute top-0 right-0 w-full h-full bg-crimson/10 clip-diagonal"></div>
+          {/* Second Panel - Gradient Overlay with Angular Cut */}
+          <div className="bg-black/90 p-6 relative transform hover:scale-[1.02] transition-transform duration-300 overflow-hidden rounded-lg">
+            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-crimson/20 to-transparent"></div>
+            <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-crimson/10 rotate-45"></div>
             <div className="absolute top-2 right-2">
               {React.createElement(features[1].icon, { 
                 className: "w-8 h-8 text-crimson opacity-50" 
@@ -56,9 +58,12 @@ export const Features = () => {
             </div>
           </div>
           
-          {/* Right Bottom Panel - Gradient Overlay */}
-          <div className="bg-black/90 p-6 relative transform hover:scale-[1.02] transition-transform duration-300 md:col-start-2 md:col-span-2 overflow-hidden">
-            <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-crimson/5 to-black/50"></div>
+          {/* Third Panel - Geometric Pattern */}
+          <div className="bg-black/90 p-6 relative transform hover:scale-[1.02] transition-transform duration-300 overflow-hidden rounded-lg">
+            <div className="absolute top-0 left-0 w-full h-full">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-crimson/5 rotate-45 transform -translate-y-16 translate-x-16"></div>
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-crimson/10 rotate-45 transform translate-y-16 -translate-x-16"></div>
+            </div>
             <div className="absolute top-2 right-2">
               {React.createElement(features[2].icon, { 
                 className: "w-8 h-8 text-crimson opacity-50" 
