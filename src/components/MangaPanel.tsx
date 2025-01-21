@@ -4,9 +4,14 @@ import { Send } from "lucide-react";
 
 export const MangaPanel = () => {
   return (
-    <div className="w-full max-w-[400px] ml-16 lg:ml-32">
+    <div className="w-full max-w-[400px] ml-16 lg:ml-32 space-y-6">
       {/* Top Panel */}
-      <div className="glass clip-diagonal-top p-8 relative mb-1 min-h-[180px] bg-[#000000e6]">
+      <div 
+        className="glass p-8 relative min-h-[180px] bg-[#000000e6]"
+        style={{
+          clipPath: "polygon(0 0, 100% 0, 85% 100%, 0 85%)"
+        }}
+      >
         <div className="space-y-4">
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-crimson font-orbitron">Enter Code</h2>
@@ -22,7 +27,12 @@ export const MangaPanel = () => {
       </div>
       
       {/* Bottom Panel */}
-      <div className="glass clip-diagonal-bottom p-8 relative min-h-[120px] bg-[#000000e6]">
+      <div 
+        className="glass p-8 relative min-h-[120px] bg-[#000000e6]"
+        style={{
+          clipPath: "polygon(15% 0, 100% 15%, 100% 100%, 0 100%)"
+        }}
+      >
         <div className="space-y-4">
           <Button 
             className="w-full group bg-crimson hover:bg-[#b22d31] text-white font-orbitron"
