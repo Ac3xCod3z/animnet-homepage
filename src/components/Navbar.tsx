@@ -35,19 +35,19 @@ export const Navbar = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <a href="/" className="text-2xl font-bold text-white hover:text-red-500 transition-colors">
+            <a href="/" className="text-2xl font-bold text-crimson font-orbitron hover:text-crimson/90 transition-colors">
               AnimNet
             </a>
           </div>
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-gray-300 hover:text-white transition-colors">
+            <a href="#features" className="text-gray-300 hover:text-crimson font-orbitron transition-colors">
               Features
             </a>
-            <a href="#about" className="text-gray-300 hover:text-white transition-colors">
+            <a href="#about" className="text-gray-300 hover:text-crimson font-orbitron transition-colors">
               About
             </a>
             <Button 
-              className="bg-red-500 hover:bg-red-600 text-white"
+              className="bg-crimson hover:bg-crimson/90 text-white font-orbitron"
               onClick={handleWalletClick}
             >
               <Wallet2 className="mr-2 h-4 w-4" />

@@ -23,8 +23,8 @@ export const Features = () => {
   return (
     <section id="features" className="py-20 glass">
       <div className="container mx-auto px-4">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          <span className="text-red-500">
+        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 font-orbitron">
+          <span className="text-crimson">
             Why Choose AnimNet
           </span>
         </h2>
@@ -33,11 +33,11 @@ export const Features = () => {
           <div className="bg-black/90 p-6 relative row-span-2 transform skew-y-1">
             <div className="absolute top-2 right-2">
               {React.createElement(features[0].icon, { 
-                className: "w-8 h-8 text-red-500 opacity-50" 
+                className: "w-8 h-8 text-crimson opacity-50" 
               })}
             </div>
             <div className="mt-8">
-              <h3 className="text-xl font-bold mb-3 text-white">{features[0].title}</h3>
+              <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[0].title}</h3>
               <p className="text-gray-400 text-sm leading-relaxed">{features[0].description}</p>
             </div>
           </div>
@@ -46,11 +46,11 @@ export const Features = () => {
           <div className="bg-black/90 p-6 relative col-span-2 transform -skew-x-1">
             <div className="absolute top-2 right-2">
               {React.createElement(features[1].icon, { 
-                className: "w-8 h-8 text-red-500 opacity-50" 
+                className: "w-8 h-8 text-crimson opacity-50" 
               })}
             </div>
             <div className="mt-8">
-              <h3 className="text-xl font-bold mb-3 text-white">{features[1].title}</h3>
+              <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[1].title}</h3>
               <p className="text-gray-400 text-sm leading-relaxed">{features[1].description}</p>
             </div>
           </div>
@@ -59,11 +59,11 @@ export const Features = () => {
           <div className="bg-black/90 p-6 relative transform skew-x-1 md:col-start-2 md:col-span-2">
             <div className="absolute top-2 right-2">
               {React.createElement(features[2].icon, { 
-                className: "w-8 h-8 text-red-500 opacity-50" 
+                className: "w-8 h-8 text-crimson opacity-50" 
               })}
             </div>
             <div className="mt-8">
-              <h3 className="text-xl font-bold mb-3 text-white">{features[2].title}</h3>
+              <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[2].title}</h3>
               <p className="text-gray-400 text-sm leading-relaxed">{features[2].description}</p>
             </div>
           </div>
