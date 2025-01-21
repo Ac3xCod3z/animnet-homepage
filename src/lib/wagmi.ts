@@ -10,6 +10,12 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
+const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || '';
+
+if (!projectId) {
+  console.warn('WalletConnect project ID is not set');
+}
+
 // Create config
 export const config = createConfig({
   autoConnect: false,
@@ -21,65 +27,36 @@ export const config = createConfig({
         shimDisconnect: true,
       },
     }),
+    new WalletConnectConnector({
+      chains,
+      options: {
+        projectId,
+        metadata: {
+          name: 'AnimNet',
+          description: 'AnimNet Web3 Application',
+          url: window.location.origin,
+          icons: ['https://avatars.githubusercontent.com/u/37784886'],
+        },
+        showQrModal: false,
+      },
+    }),
   ],
   publicClient,
 });
 
-// Initialize WalletConnect
-const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || '';
+// Initialize Web3Modal
+createWeb3Modal({
+  wagmiConfig: config,
+  projectId,
+  chains,
+  themeMode: 'dark',
+  themeVariables: {
+    '--w3m-accent': '#DC143C',
+    '--w3m-background': '#1a1a1a',
+    '--w3m-font-family': 'Orbitron, sans-serif',
+  },
+});
 
-if (!projectId) {
-  console.warn('WalletConnect project ID is not set');
-} else {
-  try {
-    console.log('Setting up WalletConnect...');
-    
-    // Prepare metadata
-    const metadata = {
-      name: 'AnimNet',
-      description: 'AnimNet Web3 Application',
-      url: window.location.origin,
-      icons: ['https://avatars.githubusercontent.com/u/37784886'],
-    };
-
-    // Prepare URLs
-    const baseUrl = window.location.origin;
-    const iconUrl = `${baseUrl}/placeholder.svg`;
-    
-    console.log('Base URL:', baseUrl);
-    console.log('Icon URL:', iconUrl);
-
-    // Add WalletConnect connector
-    config.connectors.push(
-      new WalletConnectConnector({
-        chains,
-        options: {
-          projectId,
-          metadata,
-          showQrModal: false,
-        },
-      })
-    );
-
-    // Initialize Web3Modal
-    if (typeof window !== 'undefined') {
-      console.log('Initializing Web3Modal...');
-      createWeb3Modal({
-        wagmiConfig: config,
-        projectId,
-        chains,
-        themeMode: 'dark',
-        themeVariables: {
-          accentColor: '#DC143C',
-          backgroundColor: '#1a1a1a',
-          fontFamily: 'Orbitron, sans-serif',
-        },
-      });
-      console.log('Web3Modal initialized successfully');
-    }
-  } catch (error) {
-    console.error('Error initializing WalletConnect:', error);
-  }
-}
+console.log('Web3Modal initialized successfully');
 
 export { chains };
