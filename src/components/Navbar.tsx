@@ -35,7 +35,7 @@ export const Navbar = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-4">
-            <a href="/" className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+            <a href="/" className="text-2xl font-bold text-white hover:text-red-500 transition-colors">
               AnimNet
             </a>
           </div>
@@ -47,7 +47,7 @@ export const Navbar = () => {
               About
             </a>
             <Button 
-              className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+              className="bg-red-500 hover:bg-red-600 text-white"
               onClick={handleWalletClick}
             >
               <Wallet2 className="mr-2 h-4 w-4" />

@@ -24,7 +24,7 @@ export const Features = () => {
     <section id="features" className="py-20 glass">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">
-          <span className="bg-gradient-to-r from-blue-400 to-purple-600 bg-clip-text text-transparent">
+          <span className="text-red-500">
             Why Choose AnimNet
           </span>
         </h2>
@@ -33,7 +33,7 @@ export const Features = () => {
           <div className="bg-black/90 p-6 relative row-span-2 transform skew-y-1">
             <div className="absolute top-2 right-2">
               {React.createElement(features[0].icon, { 
-                className: "w-8 h-8 text-blue-400 opacity-50" 
+                className: "w-8 h-8 text-red-500 opacity-50" 
               })}
             </div>
             <div className="mt-8">
@@ -46,7 +46,7 @@ export const Features = () => {
           <div className="bg-black/90 p-6 relative col-span-2 transform -skew-x-1">
             <div className="absolute top-2 right-2">
               {React.createElement(features[1].icon, { 
-                className: "w-8 h-8 text-blue-400 opacity-50" 
+                className: "w-8 h-8 text-red-500 opacity-50" 
               })}
             </div>
             <div className="mt-8">
@@ -59,7 +59,7 @@ export const Features = () => {
           <div className="bg-black/90 p-6 relative transform skew-x-1 md:col-start-2 md:col-span-2">
             <div className="absolute top-2 right-2">
               {React.createElement(features[2].icon, { 
-                className: "w-8 h-8 text-blue-400 opacity-50" 
+                className: "w-8 h-8 text-red-500 opacity-50" 
               })}
             </div>
             <div className="mt-8">

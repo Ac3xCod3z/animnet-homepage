@@ -22,17 +22,17 @@ export const Footer = () => {
             </h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+                <a href="#" className="text-gray-400 hover:text-red-500 transition-colors duration-200">
                   Marketplace
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+                <a href="#" className="text-gray-400 hover:text-red-500 transition-colors duration-200">
                   Collections
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+                <a href="#" className="text-gray-400 hover:text-red-500 transition-colors duration-200">
                   Artists
                 </a>
               </li>
@@ -46,17 +46,17 @@ export const Footer = () => {
             </h4>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+                <a href="#" className="text-gray-400 hover:text-red-500 transition-colors duration-200">
                   Help Center
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+                <a href="#" className="text-gray-400 hover:text-red-500 transition-colors duration-200">
                   Documentation
                 </a>
               </li>
               <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors duration-200">
+                <a href="#" className="text-gray-400 hover:text-red-500 transition-colors duration-200">
                   Blog
                 </a>
               </li>
@@ -69,19 +69,19 @@ export const Footer = () => {
             <div className="flex space-x-4">
               <a 
                 href="#" 
-                className="p-2 rounded-lg glass text-gray-400 hover:text-white transition-colors duration-200"
+                className="p-2 rounded-lg glass text-gray-400 hover:text-red-500 transition-colors duration-200"
               >
                 <Twitter className="w-5 h-5" />
               </a>
               <a 
                 href="#" 
-                className="p-2 rounded-lg glass text-gray-400 hover:text-white transition-colors duration-200"
+                className="p-2 rounded-lg glass text-gray-400 hover:text-red-500 transition-colors duration-200"
               >
                 <Github className="w-5 h-5" />
               </a>
               <a 
                 href="#" 
-                className="p-2 rounded-lg glass text-gray-400 hover:text-white transition-colors duration-200"
+                className="p-2 rounded-lg glass text-gray-400 hover:text-red-500 transition-colors duration-200"
               >
                 <MessageCircle className="w-5 h-5" />
               </a>
@@ -96,10 +96,10 @@ export const Footer = () => {
               &copy; {new Date().getFullYear()} AnimNet. All rights reserved.
             </p>
             <div className="flex gap-6">
-              <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
+              <a href="#" className="text-gray-400 hover:text-red-500 text-sm transition-colors duration-200">
                 Privacy Policy
               </a>
-              <a href="#" className="text-gray-400 hover:text-white text-sm transition-colors duration-200">
+              <a href="#" className="text-gray-400 hover:text-red-500 text-sm transition-colors duration-200">
                 Terms of Service
               </a>
             </div>
