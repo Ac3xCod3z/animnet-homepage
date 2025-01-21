@@ -44,8 +44,12 @@ const initializeWalletConnect = async () => {
     const projectId = data.projectId;
     console.log('Successfully retrieved WalletConnect project ID');
 
-    const baseUrl = window.location.origin.replace(/\/$/, '');
-    const iconUrl = new URL('/favicon.ico', baseUrl).toString();
+    // Ensure proper URL formatting
+    const baseUrl = window.location.origin.replace(/:[0-9]+$/, '').replace(/\/$/, '');
+    const iconUrl = `${baseUrl}/favicon.ico`;
+
+    console.log('Base URL:', baseUrl);
+    console.log('Icon URL:', iconUrl);
 
     // Add WalletConnect connector with explicit connection requirement
     config.connectors.push(
