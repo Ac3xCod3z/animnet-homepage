@@ -68,7 +68,7 @@ const initializeWalletConnect = async () => {
       })
     );
 
-    // Initialize Web3Modal
+    // Initialize Web3Modal with updated configuration
     if (typeof window !== 'undefined') {
       console.log('Initializing Web3Modal...');
       createWeb3Modal({
@@ -76,12 +76,14 @@ const initializeWalletConnect = async () => {
         projectId,
         chains,
         themeMode: 'dark',
+        themeVariables: {
+          '--w3m-accent': '#dc2626',
+          '--w3m-background': '#000000',
+          '--w3m-font-family': 'Orbitron, sans-serif'
+        },
         defaultChain: mainnet,
-        featuredWalletIds: ['c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96'],
-        includeWalletIds: [
-          'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
-          '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'
-        ]
+        // Remove specific wallet IDs to show all available wallets including MetaMask
+        includeWalletIds: undefined
       });
       console.log('Web3Modal initialized successfully');
     }
