@@ -13,7 +13,7 @@ const { chains, publicClient } = configureChains(
 
 // Create config
 export const config = createConfig({
-  autoConnect: false,
+  autoConnect: true, // Enable autoConnect to prevent account view errors
   connectors: [
     new InjectedConnector({
       chains,
@@ -68,7 +68,7 @@ const initializeWalletConnect = async () => {
       })
     );
 
-    // Initialize Web3Modal with correct theme variables
+    // Initialize Web3Modal with updated theme variables
     createWeb3Modal({
       wagmiConfig: config,
       projectId,
@@ -76,10 +76,8 @@ const initializeWalletConnect = async () => {
       themeMode: 'dark',
       defaultChain: mainnet,
       themeVariables: {
-        '--w3m-color-fg-1': '#FFFFFF',
-        '--w3m-color-bg-1': '#1a1b1f',
-        '--w3m-color-overlay': '#1a1b1f',
-        '--w3m-accent-color': '#da373c',
+        '--w3m-accent': '#da373c',
+        '--w3m-background': '#1a1b1f',
         '--w3m-font-family': 'Orbitron, sans-serif'
       }
     });
