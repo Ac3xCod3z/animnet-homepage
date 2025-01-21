@@ -8,10 +8,10 @@ const Redeem = () => {
       <Navbar />
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="relative z-10 container mx-auto px-4 pt-24">
-          <h1 className="text-4xl font-bold text-left ml-8 lg:ml-16 text-white font-orbitron mb-16">
+          <h1 className="text-4xl font-bold text-center text-white font-orbitron mb-16">
             Redeem Your Code
           </h1>
-          <div className="flex justify-start items-start">
+          <div className="flex justify-start items-center min-h-[50vh]">
             <MangaPanel />
           </div>
         </div>
