@@ -1,13 +1,12 @@
-import { configureChains, createConfig } from 'wagmi';
-import { mainnet, polygon } from 'wagmi/chains';
+import { createConfig, configureChains } from 'wagmi';
+import { mainnet, sepolia } from 'wagmi/chains';
 import { InjectedConnector } from 'wagmi/connectors/injected';
 import { WalletConnectConnector } from 'wagmi/connectors/walletConnect';
 import { publicProvider } from 'wagmi/providers/public';
 import { createWeb3Modal } from '@web3modal/wagmi/react';
-import { supabase } from '@/integrations/supabase/client';
 
 const { chains, publicClient } = configureChains(
-  [mainnet, polygon],
+  [mainnet, sepolia],
   [publicProvider()]
 );
 
@@ -26,28 +25,27 @@ export const config = createConfig({
   publicClient,
 });
 
-// Initialize WalletConnect and Web3Modal
-const initializeWalletConnect = async () => {
+// Initialize WalletConnect
+const projectId = import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID || '';
+
+if (!projectId) {
+  console.warn('WalletConnect project ID is not set');
+} else {
   try {
-    console.log('Fetching WalletConnect project ID...');
-    const { data, error } = await supabase.functions.invoke('get-wallet-connect-id');
+    console.log('Setting up WalletConnect...');
     
-    if (error) {
-      console.error('Error fetching WalletConnect project ID:', error);
-      throw error;
-    }
+    // Prepare metadata
+    const metadata = {
+      name: 'AnimNet',
+      description: 'AnimNet Web3 Application',
+      url: window.location.origin,
+      icons: ['https://avatars.githubusercontent.com/u/37784886'],
+    };
 
-    if (!data?.projectId) {
-      throw new Error('No project ID returned from Edge Function');
-    }
-
-    const projectId = data.projectId;
-    console.log('Successfully retrieved WalletConnect project ID');
-
-    // Ensure proper URL formatting
-    const baseUrl = window.location.origin.replace(/:[0-9]+$/, '').replace(/\/$/, '');
-    const iconUrl = `${baseUrl}/favicon.ico`;
-
+    // Prepare URLs
+    const baseUrl = window.location.origin;
+    const iconUrl = `${baseUrl}/placeholder.svg`;
+    
     console.log('Base URL:', baseUrl);
     console.log('Icon URL:', iconUrl);
 
@@ -57,13 +55,8 @@ const initializeWalletConnect = async () => {
         chains,
         options: {
           projectId,
-          showQrModal: true,
-          metadata: {
-            name: 'AnimNet',
-            description: 'AnimNet Web3 Application',
-            url: baseUrl,
-            icons: [iconUrl]
-          },
+          metadata,
+          showQrModal: false,
         },
       })
     );
@@ -76,19 +69,17 @@ const initializeWalletConnect = async () => {
         projectId,
         chains,
         themeMode: 'dark',
-        defaultChain: mainnet,
-        featuredWalletIds: ['c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96'],
-        includeWalletIds: [
-          'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
-          '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'
-        ]
+        themeVariables: {
+          '--w3m-font-family': 'Orbitron, sans-serif',
+          '--w3m-accent-color': '#DC143C',
+          '--w3m-background-color': '#1a1a1a',
+        },
       });
       console.log('Web3Modal initialized successfully');
     }
   } catch (error) {
-    console.error('Failed to initialize WalletConnect:', error);
+    console.error('Error initializing WalletConnect:', error);
   }
-};
+}
 
-// Start initialization
-initializeWalletConnect();
+export { chains };
