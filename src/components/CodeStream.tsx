@@ -14,94 +14,126 @@ export const CodeStream = () => {
     }
 
     const sketch = (p: p5) => {
-      const particles: Particle[] = [];
-      const numParticles = 100;
-      const connectionDistance = 100;
-
-      class Particle {
-        pos: p5.Vector;
-        vel: p5.Vector;
-        acc: p5.Vector;
-        code: string;
+      const streams: Stream[] = [];
+      const symbolSize = 14;
+      
+      class Symbol {
+        x: number;
+        y: number;
+        value: string;
+        speed: number;
+        opacity: number;
+        first: boolean;
         
-        constructor() {
-          this.pos = p.createVector(p.random(p.width), p.random(p.height));
-          this.vel = p.createVector(p.random(-1, 1), p.random(-1, 1));
-          this.acc = p.createVector(0, 0);
-          const codeChars = ['0', '1', '{', '}', '<', '>', '/', '*', '=', ';'];
-          this.code = codeChars[Math.floor(p.random(codeChars.length))];
+        constructor(x: number, y: number, speed: number, first: boolean) {
+          this.x = x;
+          this.y = y;
+          this.value = '';
+          this.speed = speed;
+          this.first = first;
+          this.opacity = first ? 255 : p.random(70, 100);
+          this.setToRandomSymbol();
         }
 
-        update() {
-          const mouse = p.createVector(p.mouseX, p.mouseY);
-          const dir = p5.Vector.sub(mouse, this.pos);
-          const d = dir.mag();
-          
-          if (d < 200) {
-            dir.setMag(0.5);
-            this.acc = dir;
+        setToRandomSymbol() {
+          const charTypes = [
+            'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ',
+            '0123456789',
+            'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            '∈∉∊∋∌∍∎∏∐∑−∓∔∕∖∗∘∙√∛∜∝∞∟∠∡∢∣'
+          ];
+          const charset = charTypes[Math.floor(p.random(charTypes.length))];
+          this.value = charset[Math.floor(p.random(charset.length))];
+        }
+
+        rain() {
+          if (this.y >= p.height) {
+            this.y = 0;
           } else {
-            this.acc = p.createVector(p.random(-0.1, 0.1), p.random(-0.1, 0.1));
+            this.y += this.speed;
           }
           
-          this.vel.add(this.acc);
-          this.vel.limit(3);
-          this.pos.add(this.vel);
-          
-          if (this.pos.x < 0) this.pos.x = p.width;
-          if (this.pos.x > p.width) this.pos.x = 0;
-          if (this.pos.y < 0) this.pos.y = p.height;
-          if (this.pos.y > p.height) this.pos.y = 0;
+          if (p.random(1) < 0.1) {
+            this.setToRandomSymbol();
+          }
         }
 
-        display() {
-          p.fill(0, 255, 0, 200);
-          p.noStroke();
-          p.textSize(14);
-          p.text(this.code, this.pos.x, this.pos.y);
+        render() {
+          if (this.first) {
+            p.fill(180, 255, 180, this.opacity);
+          } else {
+            p.fill(0, 255, 70, this.opacity);
+          }
+          p.text(this.value, this.x, this.y);
+        }
+      }
+
+      class Stream {
+        symbols: Symbol[];
+        totalSymbols: number;
+        speed: number;
+
+        constructor(x: number) {
+          this.totalSymbols = p.round(p.random(5, 35));
+          this.speed = p.random(5, 10);
+          this.symbols = [];
+
+          for (let i = 0; i < this.totalSymbols; i++) {
+            const first = i === 0;
+            const symbol = new Symbol(
+              x,
+              (i * symbolSize) - (this.totalSymbols * symbolSize),
+              this.speed,
+              first
+            );
+            this.symbols.push(symbol);
+          }
         }
 
-        connect(particles: Particle[]) {
-          particles.forEach(other => {
-            const d = p5.Vector.dist(this.pos, other.pos);
-            if (d < connectionDistance) {
-              const alpha = p.map(d, 0, connectionDistance, 100, 0);
-              p.stroke(0, 255, 0, alpha);
-              p.line(this.pos.x, this.pos.y, other.pos.x, other.pos.y);
-            }
+        render() {
+          this.symbols.forEach(symbol => {
+            symbol.render();
+            symbol.rain();
           });
         }
       }
 
       p.setup = () => {
-        console.log('Setting up p5 sketch...'); // Debug log
         const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
         canvas.parent(sketchRef.current!);
-        
-        for (let i = 0; i < numParticles; i++) {
-          particles.push(new Particle());
+        p.background(0);
+        p.textSize(symbolSize);
+        p.textFont('Consolas');
+
+        // Create streams
+        const streamCount = Math.floor(window.innerWidth / symbolSize);
+        for (let i = 0; i < streamCount; i++) {
+          const stream = new Stream(i * symbolSize);
+          streams.push(stream);
         }
       };
 
       p.draw = () => {
-        p.background(34, 34, 34, 250);
-        
-        particles.forEach(particle => {
-          particle.update();
-          particle.connect(particles);
-          particle.display();
-        });
+        p.background(0, 150); // Creates trailing effect
+        streams.forEach(stream => stream.render());
       };
 
       p.windowResized = () => {
         p.resizeCanvas(window.innerWidth, window.innerHeight);
+        // Recreate streams for new window size
+        streams.length = 0;
+        const streamCount = Math.floor(window.innerWidth / symbolSize);
+        for (let i = 0; i < streamCount; i++) {
+          const stream = new Stream(i * symbolSize);
+          streams.push(stream);
+        }
       };
     };
 
     const p5Instance = new p5(sketch, sketchRef.current);
     
     return () => {
-      console.log('Cleaning up p5 sketch...'); // Debug log
+      console.log('Cleaning up p5 sketch...');
       p5Instance.remove();
     };
   }, []);
