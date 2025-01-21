@@ -13,6 +13,12 @@ interface RedemptionResponse {
   remainingRedemptions?: number;
 }
 
+interface RedemptionParams {
+  p_code: string;
+  p_user_id: string;
+  p_wallet_address: string;
+}
+
 export const MangaPanel = () => {
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +57,7 @@ export const MangaPanel = () => {
     setIsLoading(true);
     try {
       console.log("Attempting to redeem code:", code);
-      const { data, error } = await supabase.rpc<RedemptionResponse>('check_and_redeem_code', {
+      const { data, error } = await supabase.rpc<RedemptionResponse, RedemptionParams>('check_and_redeem_code', {
         p_code: code.trim(),
         p_user_id: session.user.id,
         p_wallet_address: address
