@@ -68,7 +68,7 @@ const initializeWalletConnect = async () => {
       })
     );
 
-    // Initialize Web3Modal
+    // Initialize Web3Modal with correct theme variables
     createWeb3Modal({
       wagmiConfig: config,
       projectId,
@@ -76,8 +76,10 @@ const initializeWalletConnect = async () => {
       themeMode: 'dark',
       defaultChain: mainnet,
       themeVariables: {
-        '--w3m-accent': '#da373c',
-        '--w3m-background-color-1': '#1a1b1f',
+        '--w3m-color-fg-1': '#FFFFFF',
+        '--w3m-color-bg-1': '#1a1b1f',
+        '--w3m-color-overlay': '#1a1b1f',
+        '--w3m-accent-color': '#da373c',
         '--w3m-font-family': 'Orbitron, sans-serif'
       }
     });
