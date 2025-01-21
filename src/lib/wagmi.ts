@@ -51,7 +51,7 @@ const initializeWalletConnect = async () => {
     console.log('Base URL:', baseUrl);
     console.log('Icon URL:', iconUrl);
 
-    // Add WalletConnect connector with explicit connection requirement
+    // Add WalletConnect connector with enhanced options
     config.connectors.push(
       new WalletConnectConnector({
         chains,
@@ -68,7 +68,7 @@ const initializeWalletConnect = async () => {
       })
     );
 
-    // Initialize Web3Modal
+    // Initialize Web3Modal with enhanced features
     if (typeof window !== 'undefined') {
       console.log('Initializing Web3Modal...');
       createWeb3Modal({
@@ -77,6 +77,12 @@ const initializeWalletConnect = async () => {
         chains,
         themeMode: 'dark',
         defaultChain: mainnet,
+        featuredWalletIds: ['c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96'],
+        includeWalletIds: [
+          'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96',
+          '4622a2b2d6af1c9844944291e5e7351a6aa24cd7b23099efac1b2fd875da31a0'
+        ],
+        modalSize: 'wide',
       });
       console.log('Web3Modal initialized successfully');
     }
