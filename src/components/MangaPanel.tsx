@@ -21,6 +21,7 @@ export const MangaPanel = () => {
 
   const handleSubmit = async () => {
     if (!address) {
+      console.log("No wallet address found. Current address:", address);
       toast({
         title: "Error",
         description: "Please connect your wallet first",
@@ -29,7 +30,8 @@ export const MangaPanel = () => {
       return;
     }
 
-    if (!code.trim()) {
+    const trimmedCode = code.trim().toUpperCase();
+    if (!trimmedCode) {
       toast({
         title: "Error",
         description: "Please enter a redemption code",
@@ -40,23 +42,26 @@ export const MangaPanel = () => {
 
     setIsLoading(true);
     try {
-      console.log("Attempting to redeem code:", code);
-      console.log("Wallet address:", address);
+      console.log("Attempting to redeem code:", trimmedCode);
+      console.log("Using wallet address:", address);
       
       const { data, error } = await supabase.functions.invoke<RedemptionResponse>('check_and_redeem_code', {
         body: {
-          code: code.trim(),
+          code: trimmedCode,
           walletAddress: address
         }
       });
 
       console.log("Redemption response:", data);
+      console.log("Redemption error:", error);
 
       if (error) {
+        console.error("Supabase function error:", error);
         throw error;
       }
 
       if (!data?.success) {
+        console.log("Redemption failed:", data?.message);
         toast({
           title: "Error",
           description: data?.message || "Failed to redeem code",
