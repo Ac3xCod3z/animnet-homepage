@@ -28,43 +28,64 @@ export const Features = () => {
             Why Choose AnimNet
           </span>
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-[2px] bg-white/20 p-[2px]">
-          {/* Large Panel */}
-          <div className="bg-black/90 p-6 relative row-span-2 transform skew-y-1">
-            <div className="absolute top-2 right-2">
-              {React.createElement(features[0].icon, { 
-                className: "w-8 h-8 text-crimson opacity-50" 
-              })}
-            </div>
-            <div className="mt-8">
-              <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[0].title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{features[0].description}</p>
-            </div>
-          </div>
-          
-          {/* Medium Panel */}
-          <div className="bg-black/90 p-6 relative col-span-2 transform -skew-x-1">
-            <div className="absolute top-2 right-2">
-              {React.createElement(features[1].icon, { 
-                className: "w-8 h-8 text-crimson opacity-50" 
-              })}
-            </div>
-            <div className="mt-8">
-              <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[1].title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{features[1].description}</p>
+        <div className="grid grid-cols-12 gap-4 h-[600px]">
+          {/* Large Left Panel - Angled Top */}
+          <div className="col-span-5 row-span-2 bg-black/90 relative transform hover:scale-[1.02] transition-transform duration-300">
+            <div className="absolute inset-0" style={{
+              clipPath: 'polygon(0 0, 100% 30px, 100% 100%, 0 100%)'
+            }}>
+              <div className="absolute inset-0 bg-gradient-to-br from-crimson/10 to-transparent" />
+              <div className="p-6 mt-12">
+                <div className="absolute top-2 right-2">
+                  {React.createElement(features[0].icon, { 
+                    className: "w-8 h-8 text-crimson opacity-50" 
+                  })}
+                </div>
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[0].title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed font-orbitron">{features[0].description}</p>
+                </div>
+              </div>
             </div>
           </div>
-          
-          {/* Small Panel */}
-          <div className="bg-black/90 p-6 relative transform skew-x-1 md:col-start-2 md:col-span-2">
-            <div className="absolute top-2 right-2">
-              {React.createElement(features[2].icon, { 
-                className: "w-8 h-8 text-crimson opacity-50" 
-              })}
+
+          {/* Top Right Panel - Diagonal Bottom */}
+          <div className="col-span-7 bg-black/90 relative transform hover:scale-[1.02] transition-transform duration-300">
+            <div className="absolute inset-0" style={{
+              clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 85%)'
+            }}>
+              <div className="absolute inset-0 bg-gradient-to-tr from-crimson/10 to-transparent" />
+              <div className="p-6">
+                <div className="absolute top-2 right-2">
+                  {React.createElement(features[1].icon, { 
+                    className: "w-8 h-8 text-crimson opacity-50" 
+                  })}
+                </div>
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[1].title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed font-orbitron">{features[1].description}</p>
+                </div>
+              </div>
             </div>
-            <div className="mt-8">
-              <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[2].title}</h3>
-              <p className="text-gray-400 text-sm leading-relaxed">{features[2].description}</p>
+          </div>
+
+          {/* Bottom Right Panel - Angled Sides */}
+          <div className="col-span-7 bg-black/90 relative transform hover:scale-[1.02] transition-transform duration-300">
+            <div className="absolute inset-0" style={{
+              clipPath: 'polygon(0 15%, 100% 0, 100% 100%, 0 100%)'
+            }}>
+              <div className="absolute inset-0 bg-gradient-to-bl from-crimson/10 to-transparent" />
+              <div className="p-6">
+                <div className="absolute top-2 right-2">
+                  {React.createElement(features[2].icon, { 
+                    className: "w-8 h-8 text-crimson opacity-50" 
+                  })}
+                </div>
+                <div className="mt-8">
+                  <h3 className="text-xl font-bold mb-3 text-white font-orbitron">{features[2].title}</h3>
+                  <p className="text-gray-400 text-sm leading-relaxed font-orbitron">{features[2].description}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
