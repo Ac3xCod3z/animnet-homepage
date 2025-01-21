@@ -17,6 +17,7 @@ type RedemptionResponse = {
 export const MangaPanel = () => {
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [redemptionCount, setRedemptionCount] = useState<string>("");
   const { session } = useAuth();
   const { address } = useAccount();
   const { toast } = useToast();
@@ -75,6 +76,11 @@ export const MangaPanel = () => {
         return;
       }
 
+      // Update redemption count display
+      if (data.remainingRedemptions !== undefined) {
+        setRedemptionCount(`${5 - data.remainingRedemptions}/5`);
+      }
+
       toast({
         title: "Success",
         description: `${data.message}. ${data.remainingRedemptions} redemptions remaining.`,
@@ -109,6 +115,11 @@ export const MangaPanel = () => {
             <h2 className="text-2xl font-bold text-crimson font-orbitron tracking-wider">Enter Code</h2>
             <p className="text-sm text-[#8E9196] tracking-wide">
               Enter your redemption code below
+              {redemptionCount && (
+                <span className="ml-2 text-crimson font-orbitron">
+                  ({redemptionCount} redeemed)
+                </span>
+              )}
             </p>
           </div>
           <Input 
