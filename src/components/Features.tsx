@@ -42,14 +42,16 @@ export const Features = () => {
               clipPath: 'polygon(0 0, 100% 30px, 100% 100%, 0 100%)'
             }}>
               <div className="absolute inset-0 bg-[#222222] border border-gray-800" />
-              <div className="absolute inset-0 bg-gradient-to-br from-crimson/10 to-transparent" />
-              <div className="p-6 mt-8 flex flex-col items-start">
-                <h3 className="text-2xl font-bold mb-2 text-white font-orbitron">Redeem Code</h3>
-                <p className="text-gray-400 text-sm leading-relaxed font-orbitron mb-4">
+              <div className="absolute inset-0 bg-gradient-to-br from-crimson/20 to-transparent" />
+              <div className="relative p-8 flex flex-col items-start z-10">
+                <h3 className="text-3xl font-bold mb-4 text-white font-orbitron tracking-wide">
+                  Redeem Code
+                </h3>
+                <p className="text-gray-200 text-lg leading-relaxed font-orbitron mb-6">
                   If you found a GTD code you can redeem it here
                 </p>
                 <Button 
-                  className="bg-crimson hover:bg-crimson/90 text-white font-orbitron"
+                  className="bg-crimson hover:bg-crimson/90 text-white font-orbitron text-lg px-8 py-2"
                 >
                   Enter
                 </Button>
