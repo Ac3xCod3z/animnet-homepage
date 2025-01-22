@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const Redeem = () => {
-  const [redemptionCount, setRedemptionCount] = useState("5/5");
+  const [redemptionCount, setRedemptionCount] = useState("5");
 
   useEffect(() => {
     const fetchRedemptionCount = async () => {
@@ -18,7 +18,7 @@ const Redeem = () => {
 
       if (!error && data) {
         const remaining = data.max_redemptions - data.total_redemptions;
-        setRedemptionCount(`${remaining}/${data.max_redemptions}`);
+        setRedemptionCount(remaining.toString());
       }
     };
 
@@ -37,7 +37,7 @@ const Redeem = () => {
         },
         (payload: any) => {
           const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
-          setRedemptionCount(`${remaining}/${payload.new.max_redemptions}`);
+          setRedemptionCount(remaining.toString());
         }
       )
       .subscribe();
