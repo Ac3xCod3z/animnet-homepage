@@ -60,10 +60,20 @@ export const checkExistingRedemption = async (codeId: string, address: string) =
     .select('*')
     .eq('code_id', codeId)
     .eq('wallet_address', address)
-    .single();
+    .maybeSingle(); // Changed from .single() to .maybeSingle()
 
   console.log("Existing redemption check:", data);
   console.log("Redemption check error:", error);
+
+  if (error) {
+    console.error("Error checking redemption:", error);
+    toast({
+      title: "Error",
+      description: "Failed to check redemption status",
+      variant: "destructive",
+    });
+    throw error;
+  }
 
   if (data) {
     console.log("Code already redeemed by this wallet");
