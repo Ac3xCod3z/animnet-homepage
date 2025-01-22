@@ -34,9 +34,7 @@ export const initializeWalletConnectModal = async () => {
         '--wcm-font-family': 'Orbitron, sans-serif',
         '--wcm-accent-color': '#da373c', // Using our crimson color
       },
-      enableExplorer: true,
-      enableInjected: true, // Enable browser extension wallets
-      explorerExcludedWalletIds: undefined, // Don't exclude any wallets
+      explorerExcludeWalletIds: undefined, // Don't exclude any wallets
     });
 
     return walletConnectModal;
