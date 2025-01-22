@@ -56,13 +56,13 @@ const Redeem = () => {
       <Navbar />
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="flex-1 flex">
-          {/* Hero Section with Counter */}
-          <div className="w-1/2 relative flex items-center justify-center">
+          {/* Full-width section for the counter */}
+          <div className="w-full relative">
             <AnimatedCounter count={redemptionCount.split('/')[0]} />
-          </div>
-          {/* Form Section */}
-          <div className="w-1/2 flex items-center justify-start p-8">
-            <MangaPanel />
+            {/* Overlay the form on top */}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
+              <MangaPanel />
+            </div>
           </div>
         </div>
       </div>
