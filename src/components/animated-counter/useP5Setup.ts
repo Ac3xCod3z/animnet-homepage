@@ -8,7 +8,10 @@ export const useP5Setup = (count: string) => {
 
     p.setup = () => {
       const canvas = p.createCanvas(400, 200);
-      canvas.parent(p.canvas.parentElement);
+      // Correctly set the parent element
+      if (canvas.parent()) {
+        canvas.parent(canvas.parent());
+      }
       p.background(0, 0);
       p.textSize(symbolSize);
       p.textFont('Consolas');
