@@ -58,15 +58,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         }
 
         setToRandomSymbol() {
-          // Prefer numbers and binary for Matrix-like effect
-          const charTypes = [
-            '01',
-            '0123456789',
-            'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-            'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ'
-          ];
-          // Higher chance of getting binary characters
-          const charset = p.random(1) < 0.6 ? charTypes[0] : charTypes[Math.floor(p.random(1, charTypes.length))];
+          const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ';
           this.value = charset[Math.floor(p.random(charset.length))];
         }
 
@@ -74,43 +66,38 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           const currentTime = p.millis();
           
           if (!formationStarted) {
-            // Keep vertical alignment during initial fall
             this.y += this.speed;
-            if (this.y >= p.height) {
-              this.y = -symbolSize;
+            if (this.y >= numberBounds.maxY) {
+              this.y = numberBounds.minY - symbolSize;
             }
           } else if (this.isForming) {
             const dx = this.targetX - this.x;
             const dy = this.targetY - this.y;
-            // Smoother easing function for formation
-            this.x += dx * 0.05;
-            this.y += dy * 0.05;
+            this.x += dx * 0.1;
+            this.y += dy * 0.1;
             
             if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
               this.isForming = false;
               this.x = this.targetX;
-              this.y = numberBounds.minY;
+              this.y = this.targetY;
             }
           } else {
-            // Maintain strict vertical alignment within number bounds
-            this.y += this.speed * 0.3;
+            this.y += this.speed;
             if (this.y >= numberBounds.maxY) {
               this.y = numberBounds.minY;
             }
           }
           
-          // Update symbols in a more coordinated way within the stream
           if (currentTime - this.lastUpdate > this.updateInterval) {
             if (!this.isForming && this.first) {
               this.setToRandomSymbol();
-              // Propagate the same character down the stream with slight delay
               const stream = streams[this.streamIndex];
               if (stream) {
                 stream.symbols.forEach((symbol, index) => {
                   if (!symbol.first) {
                     setTimeout(() => {
                       symbol.value = this.value;
-                    }, index * 50);
+                    }, index * 25);
                   }
                 });
               }
@@ -124,7 +111,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           const isInNumber = pixelColor[0] > 0;
 
           if (!formationStarted || (formationStarted && isInNumber)) {
-            p.fill(0, 255, 70, this.opacity);
+            p.fill(255, this.opacity);
             p.text(this.value, this.x, this.y);
           }
         }
@@ -199,11 +186,10 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           maxY: (p.height + textHeight) / 2
         };
 
-        // Create evenly spaced streams
-        const streamSpacing = symbolSize * 1.2; // Slightly wider spacing
-        const streamCount = Math.floor(p.width / streamSpacing);
+        const streamSpacing = symbolSize * 1.2;
+        const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
         for (let i = 0; i < streamCount; i++) {
-          const x = i * streamSpacing;
+          const x = numberBounds.minX + (i * streamSpacing);
           const stream = new Stream(x, i);
           streams.push(stream);
         }
@@ -229,7 +215,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         targetImage.textAlign(p.CENTER, p.CENTER);
         targetImage.text(count, p.width / 2, p.height / 2);
 
-        // Recalculate number bounds
         const textWidth = fontSize * count.length * 0.6;
         const textHeight = fontSize;
         numberBounds = {
@@ -239,24 +224,18 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           maxY: (p.height + textHeight) / 2
         };
 
-        // Recreate streams with new bounds
         streams.length = 0;
-        const streamDensity = 0.5;
-        const streamCount = Math.floor(textWidth / (symbolSize * streamDensity));
+        const streamSpacing = symbolSize * 1.2;
+        const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
         for (let i = 0; i < streamCount; i++) {
-          const x = p.map(i, 0, streamCount - 1, numberBounds.minX, numberBounds.maxX);
-          const stream = new Stream(x);
+          const x = numberBounds.minX + (i * streamSpacing);
+          const stream = new Stream(x, i);
           streams.push(stream);
         }
       };
     };
 
-    const p5Instance = new p5(sketch, sketchRef.current);
-    
-    return () => {
-      console.log('Cleaning up p5 sketch...');
-      p5Instance.remove();
-    };
+    new p5(sketch, sketchRef.current);
   }, [count]);
 
   return (
