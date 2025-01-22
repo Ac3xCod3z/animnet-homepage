@@ -11,14 +11,14 @@ const { chains, publicClient } = configureChains(
   [publicProvider()]
 );
 
-// Create wagmi config
+// Create wagmi config with MetaMask (Injected) as primary connector
 export const config = createConfig({
   autoConnect: true,
   connectors: [
     new InjectedConnector({
       chains,
       options: {
-        name: 'Injected',
+        name: 'MetaMask',
         shimDisconnect: true,
       },
     }),
@@ -44,7 +44,7 @@ const initializeWalletConnect = async () => {
     const projectId = data.projectId;
     console.log('Successfully retrieved WalletConnect project ID');
 
-    // Add WalletConnect connector
+    // Add WalletConnect as secondary connector
     config.connectors.push(
       new WalletConnectConnector({
         chains,
@@ -66,7 +66,8 @@ const initializeWalletConnect = async () => {
       wagmiConfig: config,
       projectId,
       chains,
-      defaultChain: mainnet
+      defaultChain: mainnet,
+      featuredWalletIds: ['c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96'], // MetaMask wallet ID
     });
     
     console.log('Web3Modal initialized successfully');
