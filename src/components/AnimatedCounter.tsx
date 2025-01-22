@@ -37,6 +37,8 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         targetX: number;
         targetY: number;
         isForming: boolean;
+        lastUpdate: number;
+        updateInterval: number;
         
         constructor(x: number, y: number, speed: number, first: boolean) {
           this.x = x;
@@ -48,6 +50,8 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           this.targetX = x;
           this.targetY = y;
           this.isForming = false;
+          this.lastUpdate = p.millis();
+          this.updateInterval = p.random(100, 200);
           this.setToRandomSymbol();
         }
 
@@ -63,6 +67,8 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         }
 
         update() {
+          const currentTime = p.millis();
+          
           if (!formationStarted) {
             this.y += this.speed;
             if (this.y >= p.height) {
@@ -72,24 +78,29 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           } else if (this.isForming) {
             const dx = this.targetX - this.x;
             const dy = this.targetY - this.y;
-            this.x += dx * 0.1;
-            this.y += dy * 0.1;
+            // Smoother easing function for formation
+            this.x += dx * 0.05;
+            this.y += dy * 0.05;
             
             if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
               this.isForming = false;
               this.y = numberBounds.minY;
+              this.x = this.targetX;
             }
           } else {
             // Continuous downward streaming within number bounds
-            this.y += this.speed * 0.5;
+            this.y += this.speed * 0.3;
             if (this.y >= numberBounds.maxY) {
               this.y = numberBounds.minY;
-              this.setToRandomSymbol();
             }
           }
           
-          if (p.random(1) < 0.1) {
-            this.setToRandomSymbol();
+          // Update symbol less frequently for more cohesive streams
+          if (currentTime - this.lastUpdate > this.updateInterval) {
+            if (!this.isForming && p.random(1) < 0.3) {
+              this.setToRandomSymbol();
+            }
+            this.lastUpdate = currentTime;
           }
         }
 
