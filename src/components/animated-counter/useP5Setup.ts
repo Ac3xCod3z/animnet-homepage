@@ -25,7 +25,10 @@ export const useP5Setup = (count: string) => {
 
     p.setup = () => {
       const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
-      canvas.parent(p.canvas.parentElement);
+      // Fix: Use the canvas's parent element directly
+      if (canvas.elt.parentElement) {
+        canvas.parent(canvas.elt.parentElement);
+      }
       
       p.background(0, 0);
       p.textSize(symbolSize);
