@@ -1,36 +1,54 @@
-import { createContext, useContext, ReactNode } from 'react';
-import { useAccount } from 'wagmi';
-import { useWalletConnection } from '@/hooks/useWalletConnection';
+import { createContext, useContext, useState, ReactNode } from 'react';
+import { connectWallet, disconnectWallet } from '@/lib/wallet';
 
 interface AuthContextType {
   address: string | null;
   connectWallet: () => Promise<void>;
-  disconnectWallet: () => Promise<void>;
+  disconnectWallet: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const { address } = useAccount();
-  const { connectWallet, disconnectWallet } = useWalletConnection();
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [address, setAddress] = useState<string | null>(null);
 
-  const value = {
-    address: address ?? null,
-    connectWallet,
-    disconnectWallet,
+  const handleConnect = async () => {
+    try {
+      await connectWallet();
+      // The actual address will need to be retrieved from your Web3 provider
+      // This is just a placeholder
+      setAddress('0x...');
+    } catch (error) {
+      console.error('Failed to connect wallet:', error);
+    }
+  };
+
+  const handleDisconnect = () => {
+    try {
+      disconnectWallet();
+      setAddress(null);
+    } catch (error) {
+      console.error('Failed to disconnect wallet:', error);
+    }
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        address,
+        connectWallet: handleConnect,
+        disconnectWallet: handleDisconnect,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export const useAuth = () => {
+export function useAuth() {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
-};
+}
