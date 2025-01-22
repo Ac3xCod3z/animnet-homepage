@@ -24,7 +24,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
       const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
       let targetImage: p5.Graphics;
       let formationStarted = false;
-      const formationDelay = 2000;
+      const formationDelay = 3000; // Increased delay to 3 seconds
       let startTime: number;
       let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
       
@@ -65,19 +65,19 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
 
         update() {
           if (!formationStarted) {
-            // Initial falling phase - constrain to number width
+            // Continue falling even after passing through number position
             this.y += this.speed;
             if (this.y >= p.height) {
               this.y = -symbolSize;
-              // Keep streams above the number
+              // Keep streams aligned with number width
               this.x = p.random(numberBounds.minX, numberBounds.maxX);
             }
           } else if (this.isForming) {
-            // Formation phase
+            // Formation phase with smoother transition
             const dx = this.targetX - this.x;
             const dy = this.targetY - this.y;
-            this.x += dx * 0.1;
-            this.y += dy * 0.1;
+            this.x += dx * 0.08; // Slower formation
+            this.y += dy * 0.08;
           }
           
           if (p.random(1) < 0.1) {
@@ -170,8 +170,8 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           maxY: (p.height + textHeight) / 2
         };
 
-        // Create more streams concentrated above the number
-        const streamDensity = 0.25; // Increased density
+        // Create fewer, more focused streams
+        const streamDensity = 0.5; // Reduced density
         const streamCount = Math.floor(textWidth / (symbolSize * streamDensity));
         for (let i = 0; i < streamCount; i++) {
           const x = p.map(i, 0, streamCount - 1, numberBounds.minX, numberBounds.maxX);
@@ -212,7 +212,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
 
         // Recreate streams with new bounds
         streams.length = 0;
-        const streamDensity = 0.25;
+        const streamDensity = 0.5;
         const streamCount = Math.floor(textWidth / (symbolSize * streamDensity));
         for (let i = 0; i < streamCount; i++) {
           const x = p.map(i, 0, streamCount - 1, numberBounds.minX, numberBounds.maxX);
