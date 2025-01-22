@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { walletConnectModal } from '@/lib/walletConnect';
 
 interface AuthContextType {
   address: string | null;
@@ -15,8 +16,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleConnect = async () => {
     try {
-      // Temporary mock connection
+      console.log('Attempting to connect wallet');
+      
+      // Open WalletConnect Modal
+      await walletConnectModal.openModal({
+        uri: 'YOUR_CONNECTION_URI' // This will be replaced with actual URI from your dApp
+      });
+
+      // For now, using a mock address until we implement full wallet connection
       setAddress("0x1234...5678");
+      
       toast({
         title: "Connected",
         description: "Wallet connected successfully",
@@ -33,6 +42,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleDisconnect = async () => {
     try {
+      console.log('Disconnecting wallet');
+      walletConnectModal.closeModal();
       setAddress(null);
       toast({
         title: "Disconnected",
