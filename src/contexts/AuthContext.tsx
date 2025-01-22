@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 interface AuthContextType {
   address: string | null;
@@ -10,16 +11,41 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const handleConnect = async () => {
-    // Will be implemented with new wallet connection logic
-    console.log('Wallet connect to be implemented');
+    try {
+      // Temporary mock connection
+      setAddress("0x1234...5678");
+      toast({
+        title: "Connected",
+        description: "Wallet connected successfully",
+      });
+    } catch (error) {
+      console.error('Wallet connect error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to connect wallet",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDisconnect = async () => {
-    // Will be implemented with new wallet connection logic
-    console.log('Wallet disconnect to be implemented');
-    setAddress(null);
+    try {
+      setAddress(null);
+      toast({
+        title: "Disconnected",
+        description: "Wallet disconnected successfully",
+      });
+    } catch (error) {
+      console.error('Wallet disconnect error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to disconnect wallet",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
