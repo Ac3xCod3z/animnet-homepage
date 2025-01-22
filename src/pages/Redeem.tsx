@@ -18,6 +18,7 @@ const Redeem = () => {
 
       if (!error && data) {
         const remaining = data.max_redemptions - data.total_redemptions;
+        console.log('Redeem: Fetched new redemption count:', remaining);
         setRedemptionCount(remaining.toString());
       }
     };
@@ -37,6 +38,7 @@ const Redeem = () => {
         },
         (payload: any) => {
           const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
+          console.log('Redeem: Realtime update received, new count:', remaining);
           setRedemptionCount(remaining.toString());
         }
       )

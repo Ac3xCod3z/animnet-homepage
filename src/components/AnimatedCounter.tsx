@@ -12,6 +12,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
 
   useEffect(() => {
     if (!sketchRef.current) return;
+    console.log('AnimatedCounter: Updating counter with new value:', count);
 
     // Remove any existing canvas
     const existingCanvas = sketchRef.current.querySelector('canvas');
@@ -19,12 +20,13 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
       existingCanvas.remove();
     }
 
+    // Create new p5 instance with updated count
     const p5Instance = new p5(createSketch, sketchRef.current);
     
     return () => {
       p5Instance.remove();
     };
-  }, [count, createSketch]);
+  }, [count, createSketch]); // Ensure effect runs when count changes
 
   return (
     <div 

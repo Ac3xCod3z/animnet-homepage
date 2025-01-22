@@ -23,6 +23,7 @@ export const MangaPanel = () => {
 
     setIsLoading(true);
     try {
+      console.log('MangaPanel: Starting redemption process');
       const codeData = await checkCodeExists(validCode);
       if (!codeData) return;
 
@@ -39,6 +40,7 @@ export const MangaPanel = () => {
       if (hasRedeemed) return;
 
       const newRedemptionCount = await processRedemption(codeData, address);
+      console.log('MangaPanel: Redemption successful, new count:', newRedemptionCount);
       setRedemptionCount(newRedemptionCount);
       
       toast({
