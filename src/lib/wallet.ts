@@ -2,7 +2,7 @@ import { WalletConnectModal } from '@walletconnect/modal';
 
 // Initialize WalletConnect Modal with project configuration
 export const walletConnectModal = new WalletConnectModal({
-  projectId: process.env.WALLET_CONNECT_PROJECT_ID || '',
+  projectId: '1383b37a880d66056df0b46fb9c31294b5bb8431f912556f6d7e1015f1d868a9',
   chains: ['eip155:1'], // Ethereum mainnet
   themeMode: 'dark',
   themeVariables: {
