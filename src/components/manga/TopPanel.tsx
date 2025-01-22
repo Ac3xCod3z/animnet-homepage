@@ -1,4 +1,5 @@
 import { Input } from "@/components/ui/input";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 
 interface TopPanelProps {
   code: string;
@@ -37,6 +38,9 @@ export const TopPanel = ({ code, setCode, redemptionCount }: TopPanelProps) => {
           onChange={(e) => setCode(e.target.value)}
           className="bg-[#111111] border-[#222222] hover:border-[#444444] focus:border-crimson transition-colors duration-200 text-white placeholder:text-[#555555] font-orbitron tracking-wider rounded-md"
         />
+        {redemptionCount && (
+          <AnimatedCounter count={remaining} />
+        )}
       </div>
     </div>
   );
