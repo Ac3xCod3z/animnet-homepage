@@ -7,11 +7,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useWeb3Modal } from '@web3modal/wagmi/react';
 
 export const Navbar = () => {
   const { address, connectWallet, disconnectWallet } = useAuth();
-  const { open } = useWeb3Modal();
 
   const handleWalletClick = async () => {
     try {
@@ -24,16 +22,6 @@ export const Navbar = () => {
     } catch (error) {
       console.error("Error in handleWalletClick:", error);
     }
-  };
-
-  const handleOpenAccountModal = () => {
-    console.log("Opening account modal");
-    open({ view: 'Account' });
-  };
-
-  const handleOpenNetworkModal = () => {
-    console.log("Opening network modal");
-    open({ view: 'Networks' });
   };
 
   const handleDisconnect = async () => {
@@ -73,12 +61,6 @@ export const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem onClick={handleOpenAccountModal}>
-                    Change Wallet
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={handleOpenNetworkModal}>
-                    Switch Network
-                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleDisconnect}>
                     Disconnect
                   </DropdownMenuItem>
@@ -98,4 +80,4 @@ export const Navbar = () => {
       </div>
     </nav>
   );
-};
+}
