@@ -1,6 +1,6 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { walletConnectModal } from '@/lib/walletConnect';
+import { walletConnectModal, initializeWalletConnectModal } from '@/lib/walletConnect';
 
 interface AuthContextType {
   address: string | null;
@@ -13,6 +13,25 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [address, setAddress] = useState<string | null>(null);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const init = async () => {
+      try {
+        console.log('Initializing WalletConnect modal...');
+        await initializeWalletConnectModal();
+        console.log('WalletConnect modal initialized successfully');
+      } catch (error) {
+        console.error('Failed to initialize WalletConnect:', error);
+        toast({
+          title: "Error",
+          description: "Failed to initialize wallet connection",
+          variant: "destructive",
+        });
+      }
+    };
+
+    init();
+  }, [toast]);
 
   const handleConnect = async () => {
     try {
