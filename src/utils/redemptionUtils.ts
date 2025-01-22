@@ -51,6 +51,17 @@ export const checkCodeExists = async (code: string) => {
     return null;
   }
 
+  // Check if maximum redemptions reached before proceeding
+  if (data.total_redemptions >= data.max_redemptions) {
+    console.log("Maximum redemptions reached:", data.total_redemptions, ">=", data.max_redemptions);
+    toast({
+      title: "Error",
+      description: "This code has reached its maximum number of redemptions",
+      variant: "destructive",
+    });
+    return null;
+  }
+
   return data;
 }
 
@@ -98,6 +109,17 @@ export const processRedemption = async (codeData: any, address: string) => {
 
   if (countError) throw countError;
   console.log('Current redemption data:', currentData);
+
+  // Double-check max redemptions haven't been reached
+  if (currentData.total_redemptions >= currentData.max_redemptions) {
+    console.log("Maximum redemptions reached during processing");
+    toast({
+      title: "Error",
+      description: "All redemption codes have been used",
+      variant: "destructive",
+    });
+    return `0/${currentData.max_redemptions}`;
+  }
 
   // Insert redemption
   const { error: insertError } = await supabase
