@@ -9,38 +9,78 @@ export class Symbol {
   private lastSwitch: number;
   private p: p5;
   private targetValue: string;
+  private isForming: boolean;
+  private isDissipating: boolean;
+  private velocity: { x: number; y: number };
+  private targetX: number;
+  private targetY: number;
 
-  constructor(p: p5, x: number, y: number, targetValue: string) {
+  constructor(p: p5, x: number, y: number, targetValue: string, isForming: boolean = true) {
     this.p = p;
-    this.x = x;
-    this.y = y;
+    this.x = isForming ? x : this.p.random(this.p.width);
+    this.y = isForming ? -50 : y;
+    this.targetX = x;
+    this.targetY = y;
     this.targetValue = targetValue;
-    this.value = targetValue;
-    this.opacity = 255;
-    this.switchInterval = p.random(100, 300);
+    this.value = this.getRandomSymbol();
+    this.opacity = isForming ? 0 : 255;
+    this.switchInterval = p.random(50, 150);
     this.lastSwitch = p.millis();
+    this.isForming = isForming;
+    this.isDissipating = false;
+    this.velocity = {
+      x: 0,
+      y: isForming ? this.p.random(2, 5) : this.p.random(-2, -5)
+    };
   }
 
-  private setToRandomSymbol() {
+  private getRandomSymbol(): string {
     const charTypes = [
-      this.targetValue,
       '0123456789',
+      'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ',
       '∈∉∊∋∌∍∎∏∐∑−∓∔∕∖∗∘∙√∛∜∝∞∟∠∡∢∣'
     ];
     const charset = charTypes[Math.floor(this.p.random(charTypes.length))];
-    this.value = charset[Math.floor(this.p.random(charset.length))];
+    return charset[Math.floor(this.p.random(charset.length))];
+  }
+
+  startDissipating() {
+    this.isDissipating = true;
+    this.velocity = {
+      x: this.p.random(-2, 2),
+      y: this.p.random(2, 5)
+    };
   }
 
   update() {
     const now = this.p.millis();
+    
+    if (this.isForming) {
+      // Move towards target position
+      this.y += this.velocity.y;
+      if (this.y >= this.targetY) {
+        this.y = this.targetY;
+        this.isForming = false;
+      }
+      this.opacity = this.p.map(this.y, -50, this.targetY, 0, 255);
+    } else if (this.isDissipating) {
+      // Move away with velocity
+      this.x += this.velocity.x;
+      this.y += this.velocity.y;
+      this.opacity = this.p.map(this.y, this.targetY, this.p.height + 50, 255, 0);
+    }
+
+    // Update symbol
     if (now - this.lastSwitch > this.switchInterval) {
-      if (this.p.random(1) < 0.1) {
-        this.setToRandomSymbol();
-      } else {
+      if (!this.isDissipating && !this.isForming) {
         this.value = this.targetValue;
+      } else {
+        this.value = this.getRandomSymbol();
       }
       this.lastSwitch = now;
     }
+
+    return this.opacity <= 0;
   }
 
   render() {

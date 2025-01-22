@@ -26,13 +26,15 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
     return () => {
       p5Instance.remove();
     };
-  }, [count, createSketch]); // Ensure effect runs when count changes
+  }, [count, createSketch]);
 
   return (
-    <div 
-      ref={sketchRef} 
-      className="w-[400px] h-[200px] mx-auto"
-      style={{ zIndex: 10 }}
-    />
+    <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
+      <div 
+        ref={sketchRef} 
+        className="w-[400px] h-[400px]"
+        style={{ zIndex: 10 }}
+      />
+    </div>
   );
 };
