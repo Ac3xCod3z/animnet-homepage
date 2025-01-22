@@ -76,16 +76,22 @@ const initializeWalletConnect = async () => {
       themeMode: 'dark',
       defaultChain: mainnet,
       themeVariables: {
-        '--w3m-accent-color': '#da373c',
-        '--w3m-accent-fill-color': '#ffffff',
-        '--w3m-background-color': '#1a1b1f',
-        '--w3m-container-border-radius': '4px',
-        '--w3m-text-big-bold-font-family': 'Orbitron',
-        '--w3m-text-medium-regular-font-family': 'Orbitron',
-        '--w3m-text-small-regular-font-family': 'Orbitron',
-        '--w3m-text-small-thin-font-family': 'Orbitron',
-        '--w3m-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
-        '--w3m-color-overlay': 'rgba(0, 0, 0, 0.8)'
+        '--wcm-font-family': 'Orbitron, sans-serif',
+        '--wcm-accent-color': '#da373c',
+        '--wcm-accent-fill-color': '#ffffff',
+        '--wcm-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
+        '--wcm-overlay-backdrop-filter': 'blur(5px)',
+        '--wcm-background-color': '#1a1b1f',
+        '--wcm-background-border-radius': '12px',
+        '--wcm-container-border-radius': '24px',
+        '--wcm-wallet-icon-border-radius': '12px',
+        '--wcm-button-border-radius': '8px',
+        '--wcm-text-big-bold-font-family': 'Orbitron, sans-serif',
+        '--wcm-text-medium-regular-font-family': 'Orbitron, sans-serif',
+        '--wcm-text-small-regular-font-family': 'Orbitron, sans-serif',
+        '--wcm-text-small-thin-font-family': 'Orbitron, sans-serif',
+        '--wcm-text-xsmall-bold-font-family': 'Orbitron, sans-serif',
+        '--wcm-text-xsmall-regular-font-family': 'Orbitron, sans-serif'
       }
     });
     console.log('Web3Modal initialized successfully');
