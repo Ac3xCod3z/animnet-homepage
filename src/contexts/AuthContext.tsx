@@ -6,6 +6,7 @@ interface AuthContextType {
   address: string | null;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => Promise<void>;
+  switchWallet: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -35,7 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const connectWithInjectedProvider = async () => {
     try {
-      console.log('Connecting with injected provider (MetaMask)...');
+      console.log('Requesting wallet connection with MetaMask...');
+      // Request accounts - this will prompt the user to connect if they haven't before
       const accounts = await window.ethereum.request({ 
         method: 'eth_requestAccounts' 
       });
@@ -56,7 +58,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       console.log('Attempting to connect wallet');
       
-      // First try to connect with injected provider if available
       if (checkForInjectedProvider()) {
         const connected = await connectWithInjectedProvider();
         if (connected) {
@@ -68,7 +69,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
       }
       
-      // If no injected provider or connection failed, use WalletConnect
       console.log('Opening WalletConnect modal...');
       await walletConnectModal.openModal();
       
@@ -84,6 +84,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       toast({
         title: "Error",
         description: "Failed to connect wallet",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSwitchWallet = async () => {
+    try {
+      console.log('Attempting to switch wallet');
+      
+      if (checkForInjectedProvider()) {
+        // This will prompt MetaMask to show the account selector
+        await window.ethereum.request({
+          method: 'wallet_requestPermissions',
+          params: [{ eth_accounts: {} }],
+        });
+        
+        const accounts = await window.ethereum.request({
+          method: 'eth_requestAccounts',
+        });
+        
+        if (accounts[0]) {
+          console.log('Switched to address:', accounts[0]);
+          setAddress(accounts[0]);
+          toast({
+            title: "Wallet Switched",
+            description: "Successfully switched to new wallet",
+          });
+        }
+      } else {
+        // If no injected provider, open WalletConnect modal
+        console.log('Opening WalletConnect modal for wallet switch...');
+        await walletConnectModal.openModal();
+      }
+    } catch (error) {
+      console.error('Wallet switch error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to switch wallet",
         variant: "destructive",
       });
     }
@@ -114,6 +152,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         address,
         connectWallet: handleConnect,
         disconnectWallet: handleDisconnect,
+        switchWallet: handleSwitchWallet,
       }}
     >
       {children}

@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Wallet2 } from "lucide-react";
+import { Wallet2, SwitchCamera } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   DropdownMenu,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export const Navbar = () => {
-  const { address, connectWallet, disconnectWallet } = useAuth();
+  const { address, connectWallet, disconnectWallet, switchWallet } = useAuth();
 
   const handleWalletClick = async () => {
     try {
@@ -27,6 +27,11 @@ export const Navbar = () => {
   const handleDisconnect = async () => {
     console.log("Disconnecting wallet");
     await disconnectWallet();
+  };
+
+  const handleSwitchWallet = async () => {
+    console.log("Switching wallet");
+    await switchWallet();
   };
 
   const truncateAddress = (address: string) => {
@@ -61,6 +66,10 @@ export const Navbar = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem onClick={handleSwitchWallet}>
+                    <SwitchCamera className="mr-2 h-4 w-4" />
+                    Switch Wallet
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleDisconnect}>
                     Disconnect
                   </DropdownMenuItem>
