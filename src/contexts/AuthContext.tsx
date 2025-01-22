@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
-import { walletConnectModal, initializeWalletConnectModal } from '@/lib/walletConnect';
+import { walletConnectModal, initializeWalletConnectModal, checkForInjectedProvider } from '@/lib/walletConnect';
 
 interface AuthContextType {
   address: string | null;
@@ -33,15 +33,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     init();
   }, [toast]);
 
+  const connectWithInjectedProvider = async () => {
+    try {
+      console.log('Connecting with injected provider (MetaMask)...');
+      const accounts = await window.ethereum.request({ 
+        method: 'eth_requestAccounts' 
+      });
+      
+      if (accounts[0]) {
+        console.log('Connected with address:', accounts[0]);
+        setAddress(accounts[0]);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error connecting with injected provider:', error);
+      return false;
+    }
+  };
+
   const handleConnect = async () => {
     try {
       console.log('Attempting to connect wallet');
       
-      // Open WalletConnect Modal
-      await walletConnectModal.openModal({
-        uri: 'YOUR_CONNECTION_URI' // This will be replaced with actual URI from your dApp
-      });
-
+      // First try to connect with injected provider if available
+      if (checkForInjectedProvider()) {
+        const connected = await connectWithInjectedProvider();
+        if (connected) {
+          toast({
+            title: "Connected",
+            description: "Wallet connected successfully via extension",
+          });
+          return;
+        }
+      }
+      
+      // If no injected provider or connection failed, use WalletConnect
+      console.log('Opening WalletConnect modal...');
+      await walletConnectModal.openModal();
+      
       // For now, using a mock address until we implement full wallet connection
       setAddress("0x1234...5678");
       
