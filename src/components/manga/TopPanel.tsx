@@ -7,8 +7,8 @@ interface TopPanelProps {
 }
 
 export const TopPanel = ({ code, setCode, redemptionCount }: TopPanelProps) => {
-  // Split the redemption count to get current and max values
-  const [current, max] = redemptionCount.split('/');
+  // Split the redemption count to get remaining and max values
+  const [remaining, max] = redemptionCount.split('/');
   
   return (
     <div 
@@ -26,7 +26,7 @@ export const TopPanel = ({ code, setCode, redemptionCount }: TopPanelProps) => {
             Enter your redemption code below
             {redemptionCount && (
               <span className="ml-2 text-crimson font-orbitron">
-                ({redemptionCount} redeemed)
+                ({remaining} redemptions remaining)
               </span>
             )}
           </p>

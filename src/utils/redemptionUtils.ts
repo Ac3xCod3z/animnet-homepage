@@ -124,7 +124,7 @@ export const processRedemption = async (codeData: any, address: string) => {
   if (updateError) throw updateError;
 
   const remaining = currentData.max_redemptions - newTotalRedemptions;
-  console.log(`Redemption processed. New total: ${newTotalRedemptions}, Remaining: ${remaining}`);
+  console.log(`Redemption processed. Remaining: ${remaining}, Total: ${currentData.max_redemptions}`);
   
-  return `${newTotalRedemptions}/${currentData.max_redemptions}`;
+  return `${remaining}/${currentData.max_redemptions}`;
 }
