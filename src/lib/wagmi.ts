@@ -76,10 +76,16 @@ const initializeWalletConnect = async () => {
       themeMode: 'dark',
       defaultChain: mainnet,
       themeVariables: {
-        '--w3m-accent': '#da373c',
+        '--w3m-accent-color': '#da373c',
+        '--w3m-accent-fill-color': '#ffffff',
         '--w3m-background-color': '#1a1b1f',
-        '--w3m-font-family': 'Orbitron',
-        '--w3m-border-radius-master': '4px'
+        '--w3m-container-border-radius': '4px',
+        '--w3m-text-big-bold-font-family': 'Orbitron',
+        '--w3m-text-medium-regular-font-family': 'Orbitron',
+        '--w3m-text-small-regular-font-family': 'Orbitron',
+        '--w3m-text-small-thin-font-family': 'Orbitron',
+        '--w3m-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
+        '--w3m-color-overlay': 'rgba(0, 0, 0, 0.8)'
       }
     });
     console.log('Web3Modal initialized successfully');
