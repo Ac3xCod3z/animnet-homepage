@@ -21,11 +21,12 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
     const sketch = (p: p5) => {
       const streams: Stream[] = [];
       const symbolSize = 14;
-      const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6; // 60% of viewport
+      const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
       let targetImage: p5.Graphics;
       let formationStarted = false;
-      const formationDelay = 2000; // 2 seconds before starting formation
+      const formationDelay = 2000;
       let startTime: number;
+      let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
       
       class Symbol {
         x: number;
@@ -64,10 +65,12 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
 
         update() {
           if (!formationStarted) {
-            // Initial falling phase
+            // Initial falling phase - constrain to number width
             this.y += this.speed;
             if (this.y >= p.height) {
               this.y = -symbolSize;
+              // Keep streams above the number
+              this.x = p.random(numberBounds.minX, numberBounds.maxX);
             }
           } else if (this.isForming) {
             // Formation phase
@@ -133,9 +136,9 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         }
 
         startForming() {
-          this.symbols.forEach((symbol, index) => {
-            const targetX = p.random(p.width * 0.3, p.width * 0.7);
-            const targetY = p.random(p.height * 0.3, p.height * 0.7);
+          this.symbols.forEach(symbol => {
+            const targetX = p.random(numberBounds.minX, numberBounds.maxX);
+            const targetY = p.random(numberBounds.minY, numberBounds.maxY);
             symbol.startForming(targetX, targetY);
           });
         }
@@ -157,10 +160,22 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         targetImage.textAlign(p.CENTER, p.CENTER);
         targetImage.text(count, p.width / 2, p.height / 2);
 
-        // Create more streams for denser effect
-        const streamCount = Math.floor(window.innerWidth / (symbolSize * 0.5)); // Doubled density
+        // Calculate number bounds
+        const textWidth = fontSize * count.length * 0.6;
+        const textHeight = fontSize;
+        numberBounds = {
+          minX: (p.width - textWidth) / 2,
+          maxX: (p.width + textWidth) / 2,
+          minY: (p.height - textHeight) / 2,
+          maxY: (p.height + textHeight) / 2
+        };
+
+        // Create more streams concentrated above the number
+        const streamDensity = 0.25; // Increased density
+        const streamCount = Math.floor(textWidth / (symbolSize * streamDensity));
         for (let i = 0; i < streamCount; i++) {
-          const stream = new Stream(i * symbolSize * 0.5);
+          const x = p.map(i, 0, streamCount - 1, numberBounds.minX, numberBounds.maxX);
+          const stream = new Stream(x);
           streams.push(stream);
         }
       };
@@ -185,10 +200,23 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         targetImage.textAlign(p.CENTER, p.CENTER);
         targetImage.text(count, p.width / 2, p.height / 2);
 
+        // Recalculate number bounds
+        const textWidth = fontSize * count.length * 0.6;
+        const textHeight = fontSize;
+        numberBounds = {
+          minX: (p.width - textWidth) / 2,
+          maxX: (p.width + textWidth) / 2,
+          minY: (p.height - textHeight) / 2,
+          maxY: (p.height + textHeight) / 2
+        };
+
+        // Recreate streams with new bounds
         streams.length = 0;
-        const streamCount = Math.floor(window.innerWidth / (symbolSize * 0.5));
+        const streamDensity = 0.25;
+        const streamCount = Math.floor(textWidth / (symbolSize * streamDensity));
         for (let i = 0; i < streamCount; i++) {
-          const stream = new Stream(i * symbolSize * 0.5);
+          const x = p.map(i, 0, streamCount - 1, numberBounds.minX, numberBounds.maxX);
+          const stream = new Stream(x);
           streams.push(stream);
         }
       };
