@@ -68,7 +68,7 @@ const initializeWalletConnect = async () => {
       })
     );
 
-    // Initialize Web3Modal with correct theme variables
+    // Initialize Web3Modal with type-safe theme variables
     createWeb3Modal({
       wagmiConfig: config,
       projectId,
@@ -76,22 +76,14 @@ const initializeWalletConnect = async () => {
       themeMode: 'dark',
       defaultChain: mainnet,
       themeVariables: {
-        '--wcm-font-family': 'Orbitron, sans-serif',
-        '--wcm-accent-color': '#da373c',
-        '--wcm-accent-fill-color': '#ffffff',
-        '--wcm-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
-        '--wcm-overlay-backdrop-filter': 'blur(5px)',
-        '--wcm-background-color': '#1a1b1f',
-        '--wcm-background-border-radius': '12px',
-        '--wcm-container-border-radius': '24px',
-        '--wcm-wallet-icon-border-radius': '12px',
-        '--wcm-button-border-radius': '8px',
-        '--wcm-text-big-bold-font-family': 'Orbitron, sans-serif',
-        '--wcm-text-medium-regular-font-family': 'Orbitron, sans-serif',
-        '--wcm-text-small-regular-font-family': 'Orbitron, sans-serif',
-        '--wcm-text-small-thin-font-family': 'Orbitron, sans-serif',
-        '--wcm-text-xsmall-bold-font-family': 'Orbitron, sans-serif',
-        '--wcm-text-xsmall-regular-font-family': 'Orbitron, sans-serif'
+        // Only using officially supported theme variables
+        '--w3m-accent-color': '#da373c',
+        '--w3m-accent-fill-color': '#ffffff',
+        '--w3m-background-color': '#1a1b1f',
+        '--w3m-container-border-radius': '24px',
+        '--w3m-button-border-radius': '8px',
+        '--w3m-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
+        '--w3m-z-index': '10'
       }
     });
     console.log('Web3Modal initialized successfully');
