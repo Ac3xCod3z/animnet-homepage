@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { MangaPanel } from "@/components/MangaPanel";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 
@@ -54,8 +55,13 @@ const Redeem = () => {
     <div className="min-h-screen bg-black text-foreground flex flex-col">
       <Navbar />
       <div className="relative min-h-screen flex flex-col overflow-hidden">
-        <div className="relative z-10 container mx-auto px-4 pt-24">
-          <div className="flex justify-start items-center min-h-[50vh]">
+        <div className="flex-1 flex">
+          {/* Hero Section with Counter */}
+          <div className="w-1/2 relative flex items-center justify-center">
+            <AnimatedCounter count={redemptionCount.split('/')[0]} />
+          </div>
+          {/* Form Section */}
+          <div className="w-1/2 flex items-center justify-start p-8">
             <MangaPanel />
           </div>
         </div>
