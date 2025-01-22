@@ -12,13 +12,13 @@ const Redeem = () => {
     const fetchRedemptionCount = async () => {
       const { data, error } = await supabase
         .from('redemption_codes')
-        .select('total_redemptions')
-        .eq('code', 'MANGA2024')
+        .select('total_redemptions, max_redemptions')
+        .eq('code', 'MANGA2025')
         .single();
 
       if (!error && data) {
-        const remaining = 5 - data.total_redemptions;
-        setRedemptionCount(`${remaining}/5`);
+        const remaining = data.max_redemptions - data.total_redemptions;
+        setRedemptionCount(`${remaining}/${data.max_redemptions}`);
       }
     };
 
@@ -33,11 +33,11 @@ const Redeem = () => {
           event: 'UPDATE',
           schema: 'public',
           table: 'redemption_codes',
-          filter: 'code=eq.MANGA2024'
+          filter: 'code=eq.MANGA2025'
         },
         (payload: any) => {
-          const remaining = 5 - payload.new.total_redemptions;
-          setRedemptionCount(`${remaining}/5`);
+          const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
+          setRedemptionCount(`${remaining}/${payload.new.max_redemptions}`);
         }
       )
       .subscribe();
