@@ -24,7 +24,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
       const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
       let targetImage: p5.Graphics;
       let formationStarted = false;
-      const formationDelay = 3000; // Increased delay to 3 seconds
+      const formationDelay = 2500; // Set to 2.5 seconds
       let startTime: number;
       let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
       
@@ -65,19 +65,16 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
 
         update() {
           if (!formationStarted) {
-            // Continue falling even after passing through number position
             this.y += this.speed;
             if (this.y >= p.height) {
               this.y = -symbolSize;
-              // Keep streams aligned with number width
               this.x = p.random(numberBounds.minX, numberBounds.maxX);
             }
           } else if (this.isForming) {
-            // Formation phase with smoother transition
             const dx = this.targetX - this.x;
             const dy = this.targetY - this.y;
-            this.x += dx * 0.08; // Slower formation
-            this.y += dy * 0.08;
+            this.x += dx * 0.1;
+            this.y += dy * 0.1;
           }
           
           if (p.random(1) < 0.1) {
@@ -170,8 +167,8 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           maxY: (p.height + textHeight) / 2
         };
 
-        // Create fewer, more focused streams
-        const streamDensity = 0.5; // Reduced density
+        // Create streams
+        const streamDensity = 0.25;
         const streamCount = Math.floor(textWidth / (symbolSize * streamDensity));
         for (let i = 0; i < streamCount; i++) {
           const x = p.map(i, 0, streamCount - 1, numberBounds.minX, numberBounds.maxX);
