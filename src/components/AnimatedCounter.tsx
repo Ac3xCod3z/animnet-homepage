@@ -12,7 +12,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
     if (!sketchRef.current) return;
     console.log('AnimatedCounter: Updating counter with new value:', count);
 
-    // Remove any existing canvas
     const existingCanvas = sketchRef.current.querySelector('canvas');
     if (existingCanvas) {
       existingCanvas.remove();
@@ -24,7 +23,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
       const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
       let targetImage: p5.Graphics;
       let formationStarted = false;
-      const formationDelay = 2500; // Set to 2.5 seconds
+      const formationDelay = 2500;
       let startTime: number;
       let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
       
@@ -75,6 +74,12 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
             const dy = this.targetY - this.y;
             this.x += dx * 0.1;
             this.y += dy * 0.1;
+          } else {
+            // Continue streaming after formation
+            this.y += this.speed * 0.5;
+            if (this.y >= numberBounds.maxY) {
+              this.y = numberBounds.minY;
+            }
           }
           
           if (p.random(1) < 0.1) {
@@ -149,7 +154,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         p.textFont('Consolas');
         startTime = p.millis();
 
-        // Create target image with the number
         targetImage = p.createGraphics(p.width, p.height);
         targetImage.background(0);
         targetImage.fill(255);
@@ -157,7 +161,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         targetImage.textAlign(p.CENTER, p.CENTER);
         targetImage.text(count, p.width / 2, p.height / 2);
 
-        // Calculate number bounds
         const textWidth = fontSize * count.length * 0.6;
         const textHeight = fontSize;
         numberBounds = {
@@ -167,7 +170,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           maxY: (p.height + textHeight) / 2
         };
 
-        // Create streams
         const streamDensity = 0.25;
         const streamCount = Math.floor(textWidth / (symbolSize * streamDensity));
         for (let i = 0; i < streamCount; i++) {
