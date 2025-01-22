@@ -76,14 +76,13 @@ const initializeWalletConnect = async () => {
       themeMode: 'dark',
       defaultChain: mainnet,
       themeVariables: {
-        // Only using officially supported theme variables
         '--w3m-accent-color': '#da373c',
         '--w3m-accent-fill-color': '#ffffff',
         '--w3m-background-color': '#1a1b1f',
         '--w3m-container-border-radius': '24px',
         '--w3m-button-border-radius': '8px',
         '--w3m-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
-        '--w3m-z-index': '10'
+        '--w3m-z-index': 10
       }
     });
     console.log('Web3Modal initialized successfully');
