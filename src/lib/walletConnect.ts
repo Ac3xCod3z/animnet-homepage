@@ -21,6 +21,9 @@ export const initializeWalletConnectModal = async () => {
       projectId: data.projectId,
       chains: ['eip155:1'], // Ethereum mainnet
       themeMode: 'dark',
+      explorerRecommendedWalletIds: [
+        'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask ID
+      ],
       themeVariables: {
         '--wcm-font-family': 'Orbitron, sans-serif',
         '--wcm-accent-color': '#da373c', // Using our crimson color
