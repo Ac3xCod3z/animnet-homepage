@@ -61,16 +61,26 @@ const initializeWalletConnect = async () => {
       })
     );
 
-    // Initialize Web3Modal
+    // Initialize Web3Modal with dark theme
     createWeb3Modal({
       wagmiConfig: config,
       projectId,
       chains,
       defaultChain: mainnet,
-      featuredWalletIds: ['c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96'], // MetaMask wallet ID
+      themeMode: 'dark',
+      themeVariables: {
+        '--w3m-font-family': 'Orbitron, sans-serif',
+        '--w3m-accent-color': '#da373c',
+        '--w3m-background-color': '#000000',
+        '--w3m-overlay-background-color': 'rgba(0, 0, 0, 0.8)',
+        '--w3m-text-big-bold-font-weight': '700',
+      },
+      featuredWalletIds: [
+        'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
+      ],
     });
     
-    console.log('Web3Modal initialized successfully');
+    console.log('Web3Modal initialized successfully with custom theme');
   } catch (error) {
     console.error('Failed to initialize WalletConnect:', error);
   }
