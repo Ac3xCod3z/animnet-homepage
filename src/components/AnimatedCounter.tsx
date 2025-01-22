@@ -73,26 +73,31 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           } else if (this.isForming) {
             const dx = this.targetX - this.x;
             const dy = this.targetY - this.y;
-            this.x += dx * 0.1;
-            this.y += dy * 0.1;
+            // Smoother easing for formation
+            const easing = 0.08;
+            this.x += dx * easing;
+            this.y += dy * easing;
             
             if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
-              this.isForming = false;
               this.x = this.targetX;
               this.y = this.targetY;
+              this.isForming = false;
             }
           } else {
+            // Consistent vertical falling motion within the number
             this.y += this.speed;
             if (this.y >= numberBounds.maxY) {
               this.y = numberBounds.minY;
             }
           }
           
+          // Update symbols in a cascading pattern
           if (currentTime - this.lastUpdate > this.updateInterval) {
-            if (!this.isForming && this.first) {
+            if (!this.isForming) {
               this.setToRandomSymbol();
               const stream = streams[this.streamIndex];
-              if (stream) {
+              if (stream && this.first) {
+                // Propagate the symbol change down the stream
                 stream.symbols.forEach((symbol, index) => {
                   if (!symbol.first) {
                     setTimeout(() => {
@@ -129,8 +134,8 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         speed: number;
 
         constructor(x: number, streamIndex: number) {
-          this.totalSymbols = p.round(p.random(5, 35));
           this.speed = p.random(3, 7);
+          this.totalSymbols = p.round(p.random(5, 35));
           this.symbols = [];
 
           for (let i = 0; i < this.totalSymbols; i++) {
@@ -154,9 +159,10 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         }
 
         startForming() {
-          this.symbols.forEach(symbol => {
-            const targetX = p.random(numberBounds.minX, numberBounds.maxX);
-            const targetY = p.random(numberBounds.minY, numberBounds.maxY);
+          // Ensure symbols form within the number bounds
+          this.symbols.forEach((symbol, index) => {
+            const targetX = symbol.x;
+            const targetY = numberBounds.minY + (index * symbolSize) % (numberBounds.maxY - numberBounds.minY);
             symbol.startForming(targetX, targetY);
           });
         }
@@ -186,6 +192,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           maxY: (p.height + textHeight) / 2
         };
 
+        // Create streams only above the number area
         const streamSpacing = symbolSize * 1.2;
         const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
         for (let i = 0; i < streamCount; i++) {
