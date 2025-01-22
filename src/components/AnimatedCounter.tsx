@@ -74,11 +74,17 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
             const dy = this.targetY - this.y;
             this.x += dx * 0.1;
             this.y += dy * 0.1;
+            
+            if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+              this.isForming = false;
+              this.y = numberBounds.minY;
+            }
           } else {
-            // Continue streaming after formation
+            // Continuous downward streaming within number bounds
             this.y += this.speed * 0.5;
             if (this.y >= numberBounds.maxY) {
               this.y = numberBounds.minY;
+              this.setToRandomSymbol();
             }
           }
           
