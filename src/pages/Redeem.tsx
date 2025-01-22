@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
 const Redeem = () => {
-  const [redemptionCount, setRedemptionCount] = useState("5");
+  const [redemptionCount, setRedemptionCount] = useState("0/5");
 
   useEffect(() => {
     const fetchRedemptionCount = async () => {
@@ -17,9 +17,8 @@ const Redeem = () => {
         .single();
 
       if (!error && data) {
-        const remaining = data.max_redemptions - data.total_redemptions;
-        console.log('Redeem: Fetched new redemption count:', remaining);
-        setRedemptionCount(remaining.toString());
+        console.log('Redeem: Fetched redemption data:', data);
+        setRedemptionCount(`${data.total_redemptions}/${data.max_redemptions}`);
       }
     };
 
@@ -37,9 +36,10 @@ const Redeem = () => {
           filter: 'code=eq.MANGA2025'
         },
         (payload: any) => {
-          const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
-          console.log('Redeem: Realtime update received, new count:', remaining);
-          setRedemptionCount(remaining.toString());
+          console.log('Redeem: Realtime update received:', payload);
+          const newCount = `${payload.new.total_redemptions}/${payload.new.max_redemptions}`;
+          console.log('Setting new redemption count:', newCount);
+          setRedemptionCount(newCount);
         }
       )
       .subscribe();
@@ -58,7 +58,7 @@ const Redeem = () => {
             Redeem Your Code
           </h1>
           <div className="mb-8">
-            <AnimatedCounter count={redemptionCount} />
+            <AnimatedCounter count={redemptionCount.split('/')[0]} />
           </div>
           <div className="flex justify-start items-center min-h-[50vh]">
             <MangaPanel />

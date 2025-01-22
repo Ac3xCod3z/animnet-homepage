@@ -60,7 +60,7 @@ export const checkExistingRedemption = async (codeId: string, address: string) =
     .select('*')
     .eq('code_id', codeId)
     .eq('wallet_address', address)
-    .maybeSingle(); // Changed from .single() to .maybeSingle()
+    .maybeSingle();
 
   console.log("Existing redemption check:", data);
   console.log("Redemption check error:", error);
@@ -89,24 +89,33 @@ export const checkExistingRedemption = async (codeId: string, address: string) =
 }
 
 export const processRedemption = async (codeData: any, address: string) => {
+  // Get current redemption count
+  const { data: currentData, error: countError } = await supabase
+    .from('redemption_codes')
+    .select('total_redemptions, max_redemptions')
+    .eq('id', codeData.id)
+    .single();
+
+  if (countError) throw countError;
+  console.log('Current redemption data:', currentData);
+
   // Insert redemption
   const { error: insertError } = await supabase
     .from('code_redemptions')
-    .insert([
-      {
-        code_id: codeData.id,
-        wallet_address: address
-      }
-    ]);
+    .insert([{
+      code_id: codeData.id,
+      wallet_address: address
+    }]);
 
   console.log("Redemption insert error:", insertError);
   if (insertError) throw insertError;
 
-  // Update redemption count
+  // Update redemption count with the latest value
+  const newTotalRedemptions = (currentData.total_redemptions || 0) + 1;
   const { error: updateError } = await supabase
     .from('redemption_codes')
     .update({ 
-      total_redemptions: codeData.total_redemptions + 1,
+      total_redemptions: newTotalRedemptions,
       updated_at: new Date().toISOString()
     })
     .eq('id', codeData.id);
@@ -114,5 +123,8 @@ export const processRedemption = async (codeData: any, address: string) => {
   console.log("Update redemption count error:", updateError);
   if (updateError) throw updateError;
 
-  return `${codeData.total_redemptions + 1}/${codeData.max_redemptions}`;
+  const remaining = currentData.max_redemptions - newTotalRedemptions;
+  console.log(`Redemption processed. New total: ${newTotalRedemptions}, Remaining: ${remaining}`);
+  
+  return `${newTotalRedemptions}/${currentData.max_redemptions}`;
 }
