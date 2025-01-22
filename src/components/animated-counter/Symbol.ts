@@ -1,90 +1,106 @@
 import p5 from 'p5';
+import { Stream } from './Stream';
 
 export class Symbol {
-  private x: number;
-  private y: number;
-  private value: string;
-  private opacity: number;
-  private switchInterval: number;
-  private lastSwitch: number;
+  x: number;
+  y: number;
+  value: string;
+  speed: number;
+  opacity: number;
+  first: boolean;
+  targetX: number;
+  targetY: number;
+  isForming: boolean;
+  lastUpdate: number;
+  updateInterval: number;
+  streamIndex: number;
   private p: p5;
-  private targetValue: string;
-  private isForming: boolean;
-  private isDissipating: boolean;
-  private velocity: { x: number; y: number };
-  private targetX: number;
-  private targetY: number;
-
-  constructor(p: p5, x: number, y: number, targetValue: string, isForming: boolean = true) {
+  private streams: Stream[];
+  private numberBounds: { minX: number; maxX: number; minY: number; maxY: number };
+  private symbolSize: number;
+  
+  constructor(
+    p: p5,
+    x: number,
+    y: number,
+    speed: number,
+    first: boolean,
+    streamIndex: number,
+    streams: Stream[],
+    numberBounds: { minX: number; maxX: number; minY: number; maxY: number },
+    symbolSize: number
+  ) {
     this.p = p;
-    this.x = isForming ? x : this.p.random(this.p.width);
-    this.y = isForming ? -50 : y;
+    this.x = x;
+    this.y = y;
+    this.value = '';
+    this.speed = speed;
+    this.first = first;
+    this.opacity = first ? 255 : p.random(70, 100);
     this.targetX = x;
     this.targetY = y;
-    this.targetValue = targetValue;
-    this.value = this.getRandomSymbol();
-    this.opacity = isForming ? 0 : 255;
-    this.switchInterval = p.random(50, 150);
-    this.lastSwitch = p.millis();
-    this.isForming = isForming;
-    this.isDissipating = false;
-    this.velocity = {
-      x: 0,
-      y: isForming ? this.p.random(2, 5) : this.p.random(-2, -5)
-    };
+    this.isForming = false;
+    this.lastUpdate = p.millis();
+    this.updateInterval = p.random(50, 150);
+    this.streamIndex = streamIndex;
+    this.streams = streams;
+    this.numberBounds = numberBounds;
+    this.symbolSize = symbolSize;
+    this.setToRandomSymbol();
   }
 
-  private getRandomSymbol(): string {
-    const charTypes = [
-      '0123456789',
-      'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ',
-      '∈∉∊∋∌∍∎∏∐∑−∓∔∕∖∗∘∙√∛∜∝∞∟∠∡∢∣'
-    ];
-    const charset = charTypes[Math.floor(this.p.random(charTypes.length))];
-    return charset[Math.floor(this.p.random(charset.length))];
-  }
-
-  startDissipating() {
-    this.isDissipating = true;
-    this.velocity = {
-      x: this.p.random(-2, 2),
-      y: this.p.random(2, 5)
-    };
+  setToRandomSymbol() {
+    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ';
+    this.value = charset[Math.floor(this.p.random(charset.length))];
   }
 
   update() {
-    const now = this.p.millis();
+    const currentTime = this.p.millis();
     
-    if (this.isForming) {
-      // Move towards target position
-      this.y += this.velocity.y;
-      if (this.y >= this.targetY) {
+    if (!this.isForming) {
+      this.y += this.speed;
+      if (this.y >= this.numberBounds.maxY) {
+        this.y = this.numberBounds.minY - this.symbolSize;
+      }
+    } else {
+      const dx = this.targetX - this.x;
+      const dy = this.targetY - this.y;
+      const easing = 0.08;
+      this.x += dx * easing;
+      this.y += dy * easing;
+      
+      if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
+        this.x = this.targetX;
         this.y = this.targetY;
         this.isForming = false;
       }
-      this.opacity = this.p.map(this.y, -50, this.targetY, 0, 255);
-    } else if (this.isDissipating) {
-      // Move away with velocity
-      this.x += this.velocity.x;
-      this.y += this.velocity.y;
-      this.opacity = this.p.map(this.y, this.targetY, this.p.height + 50, 255, 0);
     }
-
-    // Update symbol
-    if (now - this.lastSwitch > this.switchInterval) {
-      if (!this.isDissipating && !this.isForming) {
-        this.value = this.targetValue;
-      } else {
-        this.value = this.getRandomSymbol();
+    
+    if (currentTime - this.lastUpdate > this.updateInterval) {
+      if (!this.isForming) {
+        this.setToRandomSymbol();
+        const stream = this.streams[this.streamIndex];
+        if (stream && this.first) {
+          stream.propagateSymbol(this.value);
+        }
       }
-      this.lastSwitch = now;
+      this.lastUpdate = currentTime;
     }
-
-    return this.opacity <= 0;
   }
 
-  render() {
-    this.p.fill(255, 255, 255, this.opacity);
-    this.p.text(this.value, this.x, this.y);
+  render(targetImage: p5.Graphics) {
+    const pixelColor = targetImage.get(Math.floor(this.x), Math.floor(this.y));
+    const isInNumber = pixelColor[0] > 0;
+
+    if (!this.isForming || (this.isForming && isInNumber)) {
+      this.p.fill(255, this.opacity);
+      this.p.text(this.value, this.x, this.y);
+    }
+  }
+
+  startForming(tx: number, ty: number) {
+    this.isForming = true;
+    this.targetX = tx;
+    this.targetY = ty;
   }
 }
