@@ -8,9 +8,6 @@ interface TopPanelProps {
 }
 
 export const TopPanel = ({ code, setCode, redemptionCount }: TopPanelProps) => {
-  // Split the redemption count to get remaining and max values
-  const [remaining] = redemptionCount.split('/');
-  
   return (
     <div 
       className="glass relative min-h-[180px] bg-[#000000e6] border border-[#333333] shadow-lg"
@@ -35,7 +32,9 @@ export const TopPanel = ({ code, setCode, redemptionCount }: TopPanelProps) => {
         />
       </div>
       {redemptionCount && (
-        <AnimatedCounter count={remaining} />
+        <div className="absolute bottom-4 right-4 text-sm text-[#8E9196]">
+          Remaining: {redemptionCount}
+        </div>
       )}
     </div>
   );

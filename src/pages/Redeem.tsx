@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 
 const Redeem = () => {
-  const [redemptionCount, setRedemptionCount] = useState("5/5");
+  const [redemptionCount, setRedemptionCount] = useState("");
 
   useEffect(() => {
     const fetchRedemptionCount = async () => {
@@ -19,7 +19,7 @@ const Redeem = () => {
       if (!error && data) {
         console.log('Redeem: Fetched initial redemption data:', data);
         const remaining = data.max_redemptions - data.total_redemptions;
-        setRedemptionCount(`${remaining}/${data.max_redemptions}`);
+        setRedemptionCount(`${remaining}`);
       }
     };
 
@@ -40,9 +40,8 @@ const Redeem = () => {
           console.log('Redeem: Realtime update received:', payload);
           if (payload.new) {
             const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
-            const newCount = `${remaining}/${payload.new.max_redemptions}`;
-            console.log('Setting new redemption count:', newCount);
-            setRedemptionCount(newCount);
+            console.log('Setting new redemption count:', remaining);
+            setRedemptionCount(`${remaining}`);
           }
         }
       )
@@ -60,7 +59,7 @@ const Redeem = () => {
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="flex-1 flex">
           <div className="w-full relative">
-            <AnimatedCounter count={redemptionCount.split('/')[0]} />
+            <AnimatedCounter count={redemptionCount} />
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
               <MangaPanel />
             </div>
