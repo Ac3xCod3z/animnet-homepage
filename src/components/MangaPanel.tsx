@@ -3,12 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { TopPanel } from "./manga/TopPanel";
 import { BottomPanel } from "./manga/BottomPanel";
-import { 
-  validateRedemptionRequest, 
-  checkCodeExists, 
-  checkExistingRedemption, 
-  processRedemption 
-} from "@/utils/redemptionUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 export const MangaPanel = () => {
   const [code, setCode] = useState("");
@@ -18,25 +13,55 @@ export const MangaPanel = () => {
   const { toast } = useToast();
 
   const handleSubmit = async () => {
-    const validCode = validateRedemptionRequest(code, address);
-    if (!validCode || !address) return;
+    if (!address) {
+      toast({
+        title: "Error",
+        description: "Please connect your wallet first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!code.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a redemption code",
+        variant: "destructive",
+      });
+      return;
+    }
 
     setIsLoading(true);
     try {
       console.log('MangaPanel: Starting redemption process');
-      const codeData = await checkCodeExists(validCode);
-      if (!codeData) return;
+      
+      // Call the database function to handle redemption
+      const { data, error } = await supabase.rpc('check_and_redeem_code', {
+        p_code: code.trim(),
+        p_wallet_address: address
+      });
 
-      const hasRedeemed = await checkExistingRedemption(codeData.id, address);
-      if (hasRedeemed) return;
+      console.log('Redemption response:', data);
 
-      const newRedemptionCount = await processRedemption(codeData, address);
-      console.log('MangaPanel: Redemption successful, new count:', newRedemptionCount);
-      setRedemptionCount(newRedemptionCount.split('/')[0]); // Only use the remaining count
+      if (error) {
+        throw error;
+      }
+
+      if (!data.success) {
+        toast({
+          title: "Error",
+          description: data.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log('MangaPanel: Redemption successful, remaining:', data.remainingRedemptions);
+      setRedemptionCount(data.remainingRedemptions.toString());
       
       toast({
         title: "Success",
-        description: `Code redeemed successfully. ${newRedemptionCount.split('/')[0]} redemptions remaining.`,
+        description: `Code redeemed successfully. ${data.remainingRedemptions} redemptions remaining.`,
       });
 
       setCode("");

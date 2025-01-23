@@ -30,8 +30,8 @@ const Redeem = () => {
 
     fetchRedemptionCount();
 
-    // Subscribe to realtime changes
-    const channel = supabase
+    // Subscribe to both tables for real-time updates
+    const codeChannel = supabase
       .channel('redemption_updates')
       .on(
         'postgres_changes',
@@ -42,7 +42,7 @@ const Redeem = () => {
           filter: 'code=eq.MANGA2025'
         },
         (payload: any) => {
-          console.log('Redeem: Realtime update received:', payload);
+          console.log('Redeem: Real-time update received for redemption_codes:', payload);
           if (payload.new) {
             const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
             console.log('New remaining redemptions:', remaining);
@@ -54,9 +54,27 @@ const Redeem = () => {
       )
       .subscribe();
 
+    const redemptionsChannel = supabase
+      .channel('code_redemptions_updates')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'code_redemptions'
+        },
+        (payload: any) => {
+          console.log('Redeem: New redemption recorded:', payload);
+          // This will trigger a refetch to ensure we have the latest count
+          fetchRedemptionCount();
+        }
+      )
+      .subscribe();
+
     return () => {
-      console.log('Redeem: Cleaning up subscription');
-      supabase.removeChannel(channel);
+      console.log('Redeem: Cleaning up subscriptions');
+      supabase.removeChannel(codeChannel);
+      supabase.removeChannel(redemptionsChannel);
     };
   }, []);
 
@@ -67,7 +85,7 @@ const Redeem = () => {
         <div className="flex-1 flex">
           <div className="w-full relative">
             {redemptionCount !== null && (
-              <AnimatedCounter key={redemptionCount} count={redemptionCount} />
+              <AnimatedCounter key={`counter-${redemptionCount}`} count={redemptionCount} />
             )}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
               <MangaPanel />
