@@ -5,6 +5,12 @@ import { TopPanel } from "./manga/TopPanel";
 import { BottomPanel } from "./manga/BottomPanel";
 import { supabase } from "@/integrations/supabase/client";
 
+type RedemptionResponse = {
+  success: boolean;
+  message: string;
+  remainingRedemptions: number;
+}
+
 export const MangaPanel = () => {
   const [code, setCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -47,21 +53,24 @@ export const MangaPanel = () => {
         throw error;
       }
 
-      if (!data.success) {
+      // Cast the response to our expected type
+      const response = data as RedemptionResponse;
+
+      if (!response.success) {
         toast({
           title: "Error",
-          description: data.message,
+          description: response.message,
           variant: "destructive",
         });
         return;
       }
 
-      console.log('MangaPanel: Redemption successful, remaining:', data.remainingRedemptions);
-      setRedemptionCount(data.remainingRedemptions.toString());
+      console.log('MangaPanel: Redemption successful, remaining:', response.remainingRedemptions);
+      setRedemptionCount(response.remainingRedemptions.toString());
       
       toast({
         title: "Success",
-        description: `Code redeemed successfully. ${data.remainingRedemptions} redemptions remaining.`,
+        description: `Code redeemed successfully. ${response.remainingRedemptions} redemptions remaining.`,
       });
 
       setCode("");
