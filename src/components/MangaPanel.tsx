@@ -20,7 +20,7 @@ export const MangaPanel = () => {
 
   return (
     <>
-      <div className={`w-full max-w-[400px] ml-16 lg:ml-32 space-y-8 transition-opacity duration-500 ${showAccessMessage ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`w-full max-w-[400px] ml-16 lg:ml-32 space-y-8 transition-opacity duration-500 ${showAccessMessage ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
         <TopPanel 
           code={code}
           setCode={setCode}

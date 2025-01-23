@@ -13,6 +13,7 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
   useEffect(() => {
     if (!sketchRef.current || !show) return;
 
+    console.log('Access Message P5 Setup: Initializing with type:', type);
     const sketch = useP5Setup(type, sketchRef.current);
     const p5Instance = new p5(sketch, sketchRef.current);
     
@@ -29,9 +30,7 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
       ref={sketchRef} 
       className="fixed inset-0 flex items-center justify-center pointer-events-none"
       style={{ 
-        zIndex: 50,
-        width: '100vw',
-        height: '100vh',
+        zIndex: 9999, // Increased z-index to ensure it's above everything
       }}
     >
       <div 

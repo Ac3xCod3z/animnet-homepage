@@ -88,7 +88,7 @@ const Redeem = () => {
         <div className="flex-1 flex">
           <div className="w-full relative">
             <div className={`transition-opacity duration-500 ${showCounter ? 'opacity-100' : 'opacity-0'}`}>
-              {redemptionCount !== null && showCounter && (
+              {redemptionCount !== null && showCounter && !showAccessMessage && (
                 <AnimatedCounter key={`counter-${redemptionCount}`} count={redemptionCount} />
               )}
             </div>
