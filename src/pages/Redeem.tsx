@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 const Redeem = () => {
   const [redemptionCount, setRedemptionCount] = useState<string | null>(null);
   const [showCounter, setShowCounter] = useState(true);
+  const [showAccessMessage, setShowAccessMessage] = useState(false);
 
   useEffect(() => {
     const fetchRedemptionCount = async () => {
@@ -81,6 +82,10 @@ const Redeem = () => {
     };
   }, []);
 
+  const handleAccessMessageChange = (show: boolean) => {
+    setShowAccessMessage(show);
+  };
+
   return (
     <div className="min-h-screen bg-black text-foreground flex flex-col">
       <Navbar />
@@ -93,7 +98,7 @@ const Redeem = () => {
               )}
             </div>
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
-              <MangaPanel />
+              <MangaPanel onAccessMessageChange={handleAccessMessageChange} />
             </div>
           </div>
         </div>

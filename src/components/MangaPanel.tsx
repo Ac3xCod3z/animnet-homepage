@@ -4,7 +4,11 @@ import { BottomPanel } from "./manga/BottomPanel";
 import { AccessMessage } from "./AccessMessage";
 import { useRedemption } from "@/hooks/useRedemption";
 
-export const MangaPanel = () => {
+interface MangaPanelProps {
+  onAccessMessageChange: (show: boolean) => void;
+}
+
+export const MangaPanel = ({ onAccessMessageChange }: MangaPanelProps) => {
   const [code, setCode] = useState("");
   const { 
     isLoading, 
@@ -12,6 +16,11 @@ export const MangaPanel = () => {
     accessGranted, 
     handleRedemption 
   } = useRedemption();
+
+  // Update parent component when showAccessMessage changes
+  useState(() => {
+    onAccessMessageChange(showAccessMessage);
+  }, [showAccessMessage, onAccessMessageChange]);
 
   const handleSubmit = async () => {
     await handleRedemption(code);
