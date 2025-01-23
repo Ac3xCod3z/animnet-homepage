@@ -6,7 +6,7 @@ export const useP5Setup = (type: 'granted' | 'denied', containerRef: HTMLDivElem
     const streams: Stream[] = [];
     const symbolSize = 14;
     const message = type === 'granted' ? 'ACCESS GRANTED' : 'ACCESS DENIED';
-    const matrixGreen = '#0FA0CE'; // Matrix-style bright green
+    const matrixGreen = '#00FF41'; // Authentic Matrix green color
     const textColor = type === 'granted' ? '#22c55e' : '#ef4444';
     const streamColor = type === 'granted' ? matrixGreen : '#ffffff';
     const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.15;
@@ -55,6 +55,8 @@ export const useP5Setup = (type: 'granted' | 'denied', containerRef: HTMLDivElem
 
     p.draw = () => {
       p.background(0, 150);
+      p.translate(p.width / 2, p.height / 2);
+      p.translate(-p.width / 2, -p.height / 2);
       streams.forEach(stream => stream.render(targetImage, true, {
         minX: 0,
         maxX: p.width,
