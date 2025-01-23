@@ -51,8 +51,6 @@ export const useRedemption = () => {
       }
 
       const response = data as RedemptionResponse;
-      
-      // Always show the access message, but with different types
       setAccessGranted(response.success);
       setShowAccessMessage(true);
 
@@ -85,7 +83,6 @@ export const useRedemption = () => {
       setIsLoading(false);
       // Hide the access message after 5 seconds
       setTimeout(() => {
-        console.log('Hiding access message');
         setShowAccessMessage(false);
       }, 5000);
     }

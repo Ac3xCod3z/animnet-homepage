@@ -27,14 +27,14 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
   return (
     <div 
       ref={sketchRef} 
-      className="fixed inset-0 flex items-center justify-center z-50"
+      className="fixed inset-0 flex items-center justify-center pointer-events-none"
       style={{ 
+        zIndex: 50,
         width: '100vw',
         height: '100vh',
-        position: 'fixed',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)',
+        position: 'absolute',
+        left: 0,
+        top: 0,
         clipPath: 'circle(30% at center)'
       }}
     />
