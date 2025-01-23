@@ -1,62 +1,89 @@
 import p5 from 'p5';
-import { Symbol } from './Symbol';
+import { Stream } from './Stream';
 
 export const useP5Setup = (count: string) => {
-  const createSketch = (p: p5) => {
-    const symbols: Symbol[] = [];
-    const symbolSize = 180;
-    let previousCount = count;
-    let transitioning = false;
-
-    const createNumberSymbols = (num: string, forming: boolean = true) => {
-      const x = p.width / 2;
-      const y = p.height / 2;
-      return new Symbol(p, x, y, num, forming);
-    };
+  return (p: p5) => {
+    const streams: Stream[] = [];
+    const symbolSize = 14;
+    const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
+    let targetImage: p5.Graphics;
+    let formationStarted = false;
+    const formationDelay = 2500;
+    let startTime: number;
+    let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
 
     p.setup = () => {
-      const canvas = p.createCanvas(400, 400);
+      const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
       if (canvas.parent()) {
         canvas.parent(canvas.parent());
       }
-      p.background(0, 0);
+      p.background(0);
       p.textSize(symbolSize);
       p.textFont('Consolas');
-      p.textAlign(p.CENTER, p.CENTER);
+      startTime = p.millis();
 
-      // Create initial symbol
-      symbols.push(createNumberSymbols(count));
+      targetImage = p.createGraphics(p.width, p.height);
+      targetImage.background(0);
+      targetImage.fill(255);
+      targetImage.textSize(fontSize);
+      targetImage.textAlign(p.CENTER, p.CENTER);
+      targetImage.text(count, p.width / 2, p.height / 2);
+
+      const textWidth = fontSize * count.length * 0.6;
+      const textHeight = fontSize;
+      numberBounds = {
+        minX: (p.width - textWidth) / 2,
+        maxX: (p.width + textWidth) / 2,
+        minY: (p.height - textHeight) / 2,
+        maxY: (p.height + textHeight) / 2
+      };
+
+      const streamSpacing = symbolSize * 1.2;
+      const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
+      for (let i = 0; i < streamCount; i++) {
+        const x = numberBounds.minX + (i * streamSpacing);
+        const stream = new Stream({ x, streamIndex: i, p });
+        streams.push(stream);
+      }
     };
 
     p.draw = () => {
-      p.clear();
       p.background(0, 150);
-
-      // Update and render all symbols
-      for (let i = symbols.length - 1; i >= 0; i--) {
-        const symbol = symbols[i];
-        const shouldRemove = symbol.update();
-        symbol.render();
-
-        if (shouldRemove) {
-          symbols.splice(i, 1);
-        }
+      
+      if (!formationStarted && p.millis() - startTime > formationDelay) {
+        formationStarted = true;
+        streams.forEach(stream => stream.startForming(numberBounds, symbolSize));
       }
+      
+      streams.forEach(stream => stream.render(targetImage, formationStarted, numberBounds, streams, symbolSize));
+    };
 
-      // Check for count changes
-      if (previousCount !== count && !transitioning) {
-        transitioning = true;
-        // Make current symbols dissipate
-        symbols.forEach(symbol => symbol.startDissipating());
-        // Create new symbols for the new number
-        symbols.push(createNumberSymbols(count));
-        previousCount = count;
-        setTimeout(() => {
-          transitioning = false;
-        }, 1000);
+    p.windowResized = () => {
+      p.resizeCanvas(window.innerWidth, window.innerHeight);
+      targetImage = p.createGraphics(p.width, p.height);
+      targetImage.background(0);
+      targetImage.fill(255);
+      targetImage.textSize(fontSize);
+      targetImage.textAlign(p.CENTER, p.CENTER);
+      targetImage.text(count, p.width / 2, p.height / 2);
+
+      const textWidth = fontSize * count.length * 0.6;
+      const textHeight = fontSize;
+      numberBounds = {
+        minX: (p.width - textWidth) / 2,
+        maxX: (p.width + textWidth) / 2,
+        minY: (p.height - textHeight) / 2,
+        maxY: (p.height + textHeight) / 2
+      };
+
+      streams.length = 0;
+      const streamSpacing = symbolSize * 1.2;
+      const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
+      for (let i = 0; i < streamCount; i++) {
+        const x = numberBounds.minX + (i * streamSpacing);
+        const stream = new Stream({ x, streamIndex: i, p });
+        streams.push(stream);
       }
     };
   };
-
-  return createSketch;
 };
