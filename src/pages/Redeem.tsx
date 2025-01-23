@@ -1,7 +1,7 @@
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { MangaPanel } from "@/components/MangaPanel";
-import { Hero } from "@/components/Hero";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 
@@ -65,6 +65,7 @@ const Redeem = () => {
         },
         (payload: any) => {
           console.log('Redeem: New redemption recorded:', payload);
+          // This will trigger a refetch to ensure we have the latest count
           fetchRedemptionCount();
         }
       )
@@ -80,10 +81,16 @@ const Redeem = () => {
   return (
     <div className="min-h-screen bg-black text-foreground flex flex-col">
       <Navbar />
-      <div className="relative flex-1 flex flex-col">
-        <Hero />
-        <div className="absolute inset-0 flex items-center justify-end px-8">
-          <MangaPanel />
+      <div className="relative min-h-screen flex flex-col overflow-hidden">
+        <div className="flex-1 flex">
+          <div className="w-full relative">
+            {redemptionCount !== null && (
+              <AnimatedCounter key={`counter-${redemptionCount}`} count={redemptionCount} />
+            )}
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
+              <MangaPanel />
+            </div>
+          </div>
         </div>
       </div>
       <Footer />
