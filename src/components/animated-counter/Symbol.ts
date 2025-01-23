@@ -2,8 +2,8 @@ import p5 from 'p5';
 import { SymbolProps } from './types';
 
 export class Symbol {
-  private x: number;
-  private y: number;
+  public x: number;
+  public y: number;
   private value: string;
   private speed: number;
   private opacity: number;
