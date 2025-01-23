@@ -17,7 +17,7 @@ const Redeem = () => {
         .single();
 
       if (!error && data) {
-        console.log('Redeem: Fetched redemption data:', data);
+        console.log('Redeem: Fetched initial redemption data:', data);
         const remaining = data.max_redemptions - data.total_redemptions;
         setRedemptionCount(`${remaining}/${data.max_redemptions}`);
       }
@@ -25,29 +25,32 @@ const Redeem = () => {
 
     fetchRedemptionCount();
 
-    // Subscribe to changes
+    // Subscribe to realtime changes
     const channel = supabase
       .channel('redemption_updates')
       .on(
         'postgres_changes',
         {
-          event: 'UPDATE',
+          event: '*',
           schema: 'public',
           table: 'redemption_codes',
           filter: 'code=eq.MANGA2025'
         },
         (payload: any) => {
           console.log('Redeem: Realtime update received:', payload);
-          const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
-          const newCount = `${remaining}/${payload.new.max_redemptions}`;
-          console.log('Setting new redemption count:', newCount);
-          setRedemptionCount(newCount);
+          if (payload.new) {
+            const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
+            const newCount = `${remaining}/${payload.new.max_redemptions}`;
+            console.log('Setting new redemption count:', newCount);
+            setRedemptionCount(newCount);
+          }
         }
       )
       .subscribe();
 
     return () => {
-      channel.unsubscribe();
+      console.log('Redeem: Cleaning up subscription');
+      supabase.removeChannel(channel);
     };
   }, []);
 
@@ -56,10 +59,8 @@ const Redeem = () => {
       <Navbar />
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="flex-1 flex">
-          {/* Full-width section for the counter */}
           <div className="w-full relative">
             <AnimatedCounter count={redemptionCount.split('/')[0]} />
-            {/* Overlay the form on top */}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
               <MangaPanel />
             </div>
