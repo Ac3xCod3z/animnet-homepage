@@ -66,7 +66,7 @@ const Redeem = () => {
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="flex-1 flex">
           <div className="w-full relative">
-            {redemptionCount !== null && parseInt(redemptionCount) > 0 && (
+            {redemptionCount !== null && parseInt(redemptionCount) >= 0 && (
               <AnimatedCounter key={redemptionCount} count={redemptionCount} />
             )}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">

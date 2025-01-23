@@ -5,21 +5,26 @@ import { AnimatedCounterProps } from './animated-counter/types';
 
 export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
   const sketchRef = useRef<HTMLDivElement>(null);
+  const previousCountRef = useRef<string>(count);
 
   useEffect(() => {
     if (!sketchRef.current) return;
     
     // Validate that count is a positive number
     const numCount = parseInt(count);
-    if (isNaN(numCount) || numCount <= 0) {
+    if (isNaN(numCount) || numCount < 0) {
       console.error('AnimatedCounter: Invalid count value:', count);
       return;
     }
     
-    console.log('AnimatedCounter: Updating counter with new value:', count);
-
-    const sketch = useP5Setup(count);
-    new p5(sketch, sketchRef.current);
+    // Only trigger animation if count has actually changed
+    if (previousCountRef.current !== count) {
+      console.log('AnimatedCounter: Transitioning from', previousCountRef.current, 'to', count);
+      previousCountRef.current = count;
+      
+      const sketch = useP5Setup(count);
+      new p5(sketch, sketchRef.current);
+    }
 
     return () => {
       // Cleanup previous canvas on unmount or count change
