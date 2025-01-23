@@ -59,7 +59,12 @@ export const useP5Setup = (count: string) => {
       const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
       for (let i = 0; i < streamCount; i++) {
         const x = numberBounds.minX + (i * streamSpacing);
-        const stream = new Stream({ x, streamIndex: i, p });
+        const stream = new Stream({ 
+          x, 
+          streamIndex: i, 
+          p,
+          color: '#FFFFFF' // Adding the required color property
+        });
         streams.push(stream);
       }
     };
