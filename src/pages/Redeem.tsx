@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useState, useEffect } from "react";
 
 const Redeem = () => {
-  const [redemptionCount, setRedemptionCount] = useState("");
+  const [redemptionCount, setRedemptionCount] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRedemptionCount = async () => {
@@ -19,7 +19,10 @@ const Redeem = () => {
       if (!error && data) {
         console.log('Redeem: Fetched initial redemption data:', data);
         const remaining = data.max_redemptions - data.total_redemptions;
+        console.log('Initial remaining redemptions:', remaining);
         setRedemptionCount(`${remaining}`);
+      } else {
+        console.error('Error fetching redemption data:', error);
       }
     };
 
@@ -59,7 +62,7 @@ const Redeem = () => {
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="flex-1 flex">
           <div className="w-full relative">
-            <AnimatedCounter count={redemptionCount} />
+            {redemptionCount !== null && <AnimatedCounter count={redemptionCount} />}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
               <MangaPanel />
             </div>
