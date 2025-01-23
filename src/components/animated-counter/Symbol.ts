@@ -49,7 +49,7 @@ export class Symbol {
   updateDissolution(progress: number) {
     if (this.isDissolving) {
       this.state.opacity = this.p.map(progress, 0, 1, this.state.opacity, 0);
-      this.config.speed *= 1.01;
+      this.config.speed *= 1.01; // Gradually increase fall speed
     }
   }
 
@@ -60,20 +60,12 @@ export class Symbol {
   update(formationStarted: boolean, numberBounds: any, streams: any[], symbolSize: number) {
     const currentTime = this.p.millis();
     
-    if (this.isDissolving) {
-      // During dissolution, symbols fall down
-      this.y += this.config.speed;
-      if (this.y >= numberBounds.maxY) {
-        this.y = numberBounds.minY - symbolSize;
-      }
-    } else if (!formationStarted) {
-      // Initial rain effect
+    if (!formationStarted || this.isDissolving) {
       this.y += this.config.speed;
       if (this.y >= numberBounds.maxY) {
         this.y = numberBounds.minY - symbolSize;
       }
     } else if (this.state.isForming) {
-      // Moving to form the number
       const { x, y, hasReachedTarget } = calculateNewPosition(
         { x: this.x, y: this.y },
         { x: this.position.targetX, y: this.position.targetY }
@@ -89,18 +81,19 @@ export class Symbol {
       }
     }
     
-    // Regular symbol updates for the matrix effect
-    if (currentTime - this.state.lastUpdate > this.config.updateInterval && !this.isDissolving) {
-      this.setToRandomSymbol();
-      const stream = streams[this.config.streamIndex];
-      if (stream && this.config.first) {
-        stream.symbols.forEach((symbol: Symbol, index: number) => {
-          if (!symbol.config.first) {
-            setTimeout(() => {
-              symbol.state.value = this.state.value;
-            }, index * 25);
-          }
-        });
+    if (currentTime - this.state.lastUpdate > this.config.updateInterval) {
+      if (!this.state.isForming) {
+        this.setToRandomSymbol();
+        const stream = streams[this.config.streamIndex];
+        if (stream && this.config.first) {
+          stream.symbols.forEach((symbol: Symbol, index: number) => {
+            if (!symbol.config.first) {
+              setTimeout(() => {
+                symbol.state.value = this.state.value;
+              }, index * 25);
+            }
+          });
+        }
       }
       this.state.lastUpdate = currentTime;
     }

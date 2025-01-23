@@ -32,7 +32,7 @@ export class Stream {
 
   startDissolving() {
     this.isDissolving = true;
-    this.speed *= 2;
+    this.speed *= 2; // Double the fall speed during dissolution
     this.symbols.forEach(symbol => symbol.startDissolving());
   }
 
