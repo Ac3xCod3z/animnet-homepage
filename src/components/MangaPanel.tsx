@@ -41,7 +41,7 @@ export const MangaPanel = () => {
 
       const newRedemptionCount = await processRedemption(codeData, address);
       console.log('MangaPanel: Redemption successful, new count:', newRedemptionCount);
-      setRedemptionCount(newRedemptionCount);
+      setRedemptionCount(newRedemptionCount.split('/')[0]); // Only use the remaining count
       
       toast({
         title: "Success",
