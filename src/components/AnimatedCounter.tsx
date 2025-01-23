@@ -18,14 +18,17 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
     
     console.log('AnimatedCounter: Updating counter with new value:', count);
 
-    const existingCanvas = sketchRef.current.querySelector('canvas');
-    if (existingCanvas) {
-      existingCanvas.remove();
-    }
-
     const sketch = useP5Setup(count);
     new p5(sketch, sketchRef.current);
-  }, [count]);
+
+    return () => {
+      // Cleanup previous canvas on unmount or count change
+      const existingCanvas = sketchRef.current?.querySelector('canvas');
+      if (existingCanvas) {
+        existingCanvas.remove();
+      }
+    };
+  }, [count]); // Re-run effect when count changes
 
   return (
     <div 

@@ -15,6 +15,7 @@ export const useP5Setup = (count: string) => {
     let previousCount: string | null = null;
 
     p.setup = () => {
+      console.log('P5 Setup: Initializing with count:', count);
       const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
       if (canvas.parent()) {
         canvas.parent(canvas.parent());
@@ -24,26 +25,35 @@ export const useP5Setup = (count: string) => {
       p.textFont('Consolas');
       startTime = p.millis();
 
-      targetImage = p.createGraphics(p.width, p.height);
-      targetImage.background(0);
-      targetImage.fill(255);
-      targetImage.textSize(fontSize);
-      targetImage.textAlign(p.CENTER, p.CENTER);
-      targetImage.text(count, p.width / 2, p.height / 2);
+      targetImage = createTargetImage();
+      numberBounds = calculateNumberBounds();
+      initializeStreams();
+      previousCount = count;
+    };
 
+    const createTargetImage = () => {
+      const img = p.createGraphics(p.width, p.height);
+      img.background(0);
+      img.fill(255);
+      img.textSize(fontSize);
+      img.textAlign(p.CENTER, p.CENTER);
+      img.text(count, p.width / 2, p.height / 2);
+      return img;
+    };
+
+    const calculateNumberBounds = () => {
       const textWidth = fontSize * count.length * 0.6;
       const textHeight = fontSize;
-      numberBounds = {
+      return {
         minX: (p.width - textWidth) / 2,
         maxX: (p.width + textWidth) / 2,
         minY: (p.height - textHeight) / 2,
         maxY: (p.height + textHeight) / 2
       };
-
-      initializeStreams();
     };
 
     const initializeStreams = () => {
+      console.log('Initializing streams for count:', count);
       streams.length = 0;
       const streamSpacing = symbolSize * 1.2;
       const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
@@ -57,26 +67,36 @@ export const useP5Setup = (count: string) => {
     p.draw = () => {
       p.background(0, 150);
       
-      if (previousCount !== null && previousCount !== count) {
+      if (previousCount !== count) {
+        console.log('Count changed from', previousCount, 'to', count);
         dissolving = true;
         formationStarted = false;
         startTime = p.millis();
-        previousCount = count;
         
-        // Reset streams for new number formation
-        initializeStreams();
+        // Update target image for new number
+        targetImage = createTargetImage();
+        numberBounds = calculateNumberBounds();
+        previousCount = count;
       }
 
       if (dissolving) {
+        let allDissolved = true;
         streams.forEach(stream => {
           stream.dissolve();
-          if (stream.isFullyDissolved()) {
-            dissolving = false;
-            formationStarted = false;
-            startTime = p.millis();
+          if (!stream.isFullyDissolved()) {
+            allDissolved = false;
           }
         });
+        
+        if (allDissolved) {
+          console.log('All streams dissolved, reinitializing for new number');
+          dissolving = false;
+          formationStarted = false;
+          startTime = p.millis();
+          initializeStreams();
+        }
       } else if (!formationStarted && p.millis() - startTime > formationDelay) {
+        console.log('Starting formation of new number');
         formationStarted = true;
         streams.forEach(stream => stream.startForming(numberBounds, symbolSize));
       }
@@ -86,22 +106,8 @@ export const useP5Setup = (count: string) => {
 
     p.windowResized = () => {
       p.resizeCanvas(window.innerWidth, window.innerHeight);
-      targetImage = p.createGraphics(p.width, p.height);
-      targetImage.background(0);
-      targetImage.fill(255);
-      targetImage.textSize(fontSize);
-      targetImage.textAlign(p.CENTER, p.CENTER);
-      targetImage.text(count, p.width / 2, p.height / 2);
-
-      const textWidth = fontSize * count.length * 0.6;
-      const textHeight = fontSize;
-      numberBounds = {
-        minX: (p.width - textWidth) / 2,
-        maxX: (p.width + textWidth) / 2,
-        minY: (p.height - textHeight) / 2,
-        maxY: (p.height + textHeight) / 2
-      };
-
+      targetImage = createTargetImage();
+      numberBounds = calculateNumberBounds();
       initializeStreams();
     };
   };
