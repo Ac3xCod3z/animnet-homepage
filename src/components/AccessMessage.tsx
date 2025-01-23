@@ -13,7 +13,7 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
   useEffect(() => {
     if (!sketchRef.current || !show) return;
 
-    const sketch = useP5Setup(type);
+    const sketch = useP5Setup(type, sketchRef.current);
     const p5Instance = new p5(sketch, sketchRef.current);
     
     return () => {

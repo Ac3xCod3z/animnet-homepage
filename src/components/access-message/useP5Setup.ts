@@ -1,7 +1,7 @@
 import p5 from 'p5';
 import { Stream } from '../animated-counter/Stream';
 
-export const useP5Setup = (type: 'granted' | 'denied') => {
+export const useP5Setup = (type: 'granted' | 'denied', containerRef: HTMLDivElement | null) => {
   return (p: p5) => {
     const streams: Stream[] = [];
     const symbolSize = 14;
@@ -15,7 +15,9 @@ export const useP5Setup = (type: 'granted' | 'denied') => {
     p.setup = () => {
       console.log('Access Message P5 Setup: Initializing with type:', type);
       const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
-      canvas.parent(sketchRef.current);
+      if (containerRef) {
+        canvas.parent(containerRef);
+      }
       p.background(0);
       p.textSize(symbolSize);
       p.textFont('Consolas');
