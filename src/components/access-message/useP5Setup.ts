@@ -7,8 +7,8 @@ export const useP5Setup = (type: 'granted' | 'denied', containerRef: HTMLDivElem
     const symbolSize = 14;
     const message = type === 'granted' ? 'ACCESS GRANTED' : 'ACCESS DENIED';
     const matrixGreen = '#00FF41'; // Authentic Matrix green color
-    const textColor = type === 'granted' ? '#22c55e' : '#ef4444';
-    const streamColor = type === 'granted' ? matrixGreen : '#ffffff';
+    const matrixRed = '#FF0000';   // Bright red for denied
+    const streamColor = type === 'granted' ? matrixGreen : matrixRed;
     const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.15;
     let targetImage: p5.Graphics;
     
@@ -29,7 +29,7 @@ export const useP5Setup = (type: 'granted' | 'denied', containerRef: HTMLDivElem
     const createTargetImage = () => {
       const img = p.createGraphics(p.width, p.height);
       img.background(0);
-      img.fill(textColor);
+      img.fill(streamColor); // Use the same color for both text and stream
       img.textSize(fontSize);
       img.textFont('Orbitron');
       img.textAlign(p.CENTER, p.CENTER);
@@ -47,7 +47,7 @@ export const useP5Setup = (type: 'granted' | 'denied', containerRef: HTMLDivElem
           x, 
           streamIndex: i, 
           p,
-          color: streamColor 
+          color: streamColor // Use the same color for the stream
         });
         streams.push(stream);
       }
@@ -55,8 +55,6 @@ export const useP5Setup = (type: 'granted' | 'denied', containerRef: HTMLDivElem
 
     p.draw = () => {
       p.background(0, 150);
-      p.translate(p.width / 2, p.height / 2);
-      p.translate(-p.width / 2, -p.height / 2);
       streams.forEach(stream => stream.render(targetImage, true, {
         minX: 0,
         maxX: p.width,

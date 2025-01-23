@@ -32,10 +32,9 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
         zIndex: 50,
         width: '100vw',
         height: '100vh',
-        position: 'fixed',
-        left: '50%',
-        top: '50%',
-        transform: 'translate(-50%, -50%)',
+        position: 'absolute',
+        left: 0,
+        top: 0,
         clipPath: 'circle(30% at center)'
       }}
     />
