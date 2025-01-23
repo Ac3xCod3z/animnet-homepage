@@ -11,6 +11,9 @@ export class Symbol {
   private config: SymbolConfig;
   private p: p5;
   private dissolving: boolean = false;
+  private formationProgress: number = 0;
+  private formationStartTime: number = 0;
+  private formationDuration: number = 1500; // Duration in milliseconds
 
   constructor({ x, y, speed, first, streamIndex, p }: SymbolProps) {
     this.p = p;
@@ -66,18 +69,31 @@ export class Symbol {
         this.y = numberBounds.minY - symbolSize;
       }
     } else if (this.state.isForming) {
+      if (this.formationStartTime === 0) {
+        this.formationStartTime = currentTime;
+      }
+      
+      // Calculate formation progress
+      this.formationProgress = Math.min(
+        (currentTime - this.formationStartTime) / this.formationDuration,
+        1
+      );
+      
       const { x, y, hasReachedTarget } = calculateNewPosition(
         { x: this.x, y: this.y },
-        { x: this.position.targetX, y: this.position.targetY }
+        { x: this.position.targetX, y: this.position.targetY },
+        this.formationProgress
       );
       
       this.x = x;
       this.y = y;
       
-      if (hasReachedTarget) {
+      if (hasReachedTarget || this.formationProgress >= 1) {
         this.x = this.position.targetX;
         this.y = this.position.targetY;
         this.state.isForming = false;
+        this.formationProgress = 0;
+        this.formationStartTime = 0;
       }
     } else {
       this.y += this.config.speed;
@@ -120,5 +136,7 @@ export class Symbol {
     this.state.opacity = this.config.first ? 255 : this.p.random(70, 100);
     this.position.targetX = tx;
     this.position.targetY = ty;
+    this.formationProgress = 0;
+    this.formationStartTime = 0;
   }
 }
