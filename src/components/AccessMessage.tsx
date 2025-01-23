@@ -30,6 +30,11 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
       className="fixed inset-0 flex items-center justify-center pointer-events-none"
       style={{ 
         zIndex: 50,
+        width: '100vw',
+        height: '100vh',
+        position: 'absolute',
+        left: 0,
+        top: 0,
         clipPath: 'circle(30% at center)'
       }}
     />

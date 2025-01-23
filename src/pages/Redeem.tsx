@@ -87,7 +87,7 @@ const Redeem = () => {
     <div className="min-h-screen bg-black text-foreground flex flex-col">
       <Navbar />
       <div className="relative min-h-screen flex flex-col overflow-hidden">
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex">
           <div className="w-full relative">
             {redemptionCount !== null && showCounter && (
               <AnimatedCounter key={`counter-${redemptionCount}`} count={redemptionCount} />
