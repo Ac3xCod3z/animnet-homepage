@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TopPanel } from "./manga/TopPanel";
 import { BottomPanel } from "./manga/BottomPanel";
 import { AccessMessage } from "./AccessMessage";
@@ -18,7 +18,7 @@ export const MangaPanel = ({ onAccessMessageChange }: MangaPanelProps) => {
   } = useRedemption();
 
   // Update parent component when showAccessMessage changes
-  useState(() => {
+  useEffect(() => {
     onAccessMessageChange(showAccessMessage);
   }, [showAccessMessage, onAccessMessageChange]);
 
