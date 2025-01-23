@@ -20,7 +20,7 @@ export const MangaPanel = () => {
 
   return (
     <>
-      <div className="w-full max-w-[400px] ml-16 lg:ml-32 space-y-8">
+      <div className="w-full max-w-[400px] mx-auto space-y-8">
         <TopPanel 
           code={code}
           setCode={setCode}
