@@ -27,7 +27,7 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
   return (
     <div 
       ref={sketchRef} 
-      className="fixed inset-0 w-full h-full pointer-events-none"
+      className="fixed inset-0 w-full h-full pointer-events-none flex items-center justify-center"
       style={{ zIndex: 50 }}
     />
   );
