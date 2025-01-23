@@ -20,7 +20,9 @@ const Redeem = () => {
         console.log('Redeem: Fetched initial redemption data:', data);
         const remaining = data.max_redemptions - data.total_redemptions;
         console.log('Initial remaining redemptions:', remaining);
-        setRedemptionCount(`${remaining}`);
+        if (remaining >= 0) {
+          setRedemptionCount(remaining.toString());
+        }
       } else {
         console.error('Error fetching redemption data:', error);
       }
@@ -43,8 +45,10 @@ const Redeem = () => {
           console.log('Redeem: Realtime update received:', payload);
           if (payload.new) {
             const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
-            console.log('Setting new redemption count:', remaining);
-            setRedemptionCount(`${remaining}`);
+            console.log('New remaining redemptions:', remaining);
+            if (remaining >= 0) {
+              setRedemptionCount(remaining.toString());
+            }
           }
         }
       )
@@ -62,7 +66,9 @@ const Redeem = () => {
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="flex-1 flex">
           <div className="w-full relative">
-            {redemptionCount !== null && <AnimatedCounter count={redemptionCount} />}
+            {redemptionCount !== null && parseInt(redemptionCount) > 0 && (
+              <AnimatedCounter count={redemptionCount} />
+            )}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
               <MangaPanel />
             </div>

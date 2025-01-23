@@ -10,6 +10,14 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
 
   useEffect(() => {
     if (!sketchRef.current) return;
+    
+    // Validate that count is a positive number
+    const numCount = parseInt(count);
+    if (isNaN(numCount) || numCount <= 0) {
+      console.error('AnimatedCounter: Invalid count value:', count);
+      return;
+    }
+    
     console.log('AnimatedCounter: Updating counter with new value:', count);
 
     const existingCanvas = sketchRef.current.querySelector('canvas');
@@ -17,16 +25,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
       existingCanvas.remove();
     }
 
-    const sketch = (p: p5) => {
-      const streams: Stream[] = [];
-      const symbolSize = 14;
-      const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
-      let targetImage: p5.Graphics;
-      let formationStarted = false;
-      const formationDelay = 2500;
-      let startTime: number;
-      let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-      
       class Symbol {
         x: number;
         y: number;
@@ -168,6 +166,16 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         }
       }
 
+    const sketch = (p: p5) => {
+      const streams: Stream[] = [];
+      const symbolSize = 14;
+      const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
+      let targetImage: p5.Graphics;
+      let formationStarted = false;
+      const formationDelay = 2500;
+      let startTime: number;
+      let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+
       p.setup = () => {
         const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
         canvas.parent(sketchRef.current!);
@@ -192,7 +200,7 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           maxY: (p.height + textHeight) / 2
         };
 
-        // Create streams only above the number area
+        // Create streams only within the number bounds
         const streamSpacing = symbolSize * 1.2;
         const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
         for (let i = 0; i < streamCount; i++) {
