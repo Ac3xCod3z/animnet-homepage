@@ -1,85 +1,93 @@
 import p5 from 'p5';
 import { SymbolProps } from './types';
+import { SymbolState, SymbolPosition, SymbolConfig } from './symbol/types';
+import { getRandomSymbol, calculateNewPosition } from './symbol/utils';
 
 export class Symbol {
   public x: number;
   public y: number;
-  private value: string;
-  private speed: number;
-  private opacity: number;
-  private first: boolean;
-  private targetX: number;
-  private targetY: number;
-  private isForming: boolean;
-  private lastUpdate: number;
-  private updateInterval: number;
-  private streamIndex: number;
+  private state: SymbolState;
+  private position: SymbolPosition;
+  private config: SymbolConfig;
   private p: p5;
 
   constructor({ x, y, speed, first, streamIndex, p }: SymbolProps) {
     this.p = p;
     this.x = x;
     this.y = y;
-    this.value = '';
-    this.speed = speed;
-    this.first = first;
-    this.opacity = first ? 255 : this.p.random(70, 100);
-    this.targetX = x;
-    this.targetY = y;
-    this.isForming = false;
-    this.lastUpdate = this.p.millis();
-    this.updateInterval = this.p.random(50, 150);
-    this.streamIndex = streamIndex;
+    
+    this.position = {
+      x,
+      y,
+      targetX: x,
+      targetY: y
+    };
+
+    this.config = {
+      speed,
+      first,
+      updateInterval: this.p.random(50, 150),
+      streamIndex
+    };
+
+    this.state = {
+      value: '',
+      opacity: first ? 255 : this.p.random(70, 100),
+      isForming: false,
+      lastUpdate: this.p.millis()
+    };
+
     this.setToRandomSymbol();
   }
 
   setToRandomSymbol() {
-    const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜﾝ';
-    this.value = charset[Math.floor(this.p.random(charset.length))];
+    this.state.value = getRandomSymbol(this.p);
   }
 
   update(formationStarted: boolean, numberBounds: any, streams: any[], symbolSize: number) {
     const currentTime = this.p.millis();
     
     if (!formationStarted) {
-      this.y += this.speed;
+      this.y += this.config.speed;
       if (this.y >= numberBounds.maxY) {
         this.y = numberBounds.minY - symbolSize;
       }
-    } else if (this.isForming) {
-      const dx = this.targetX - this.x;
-      const dy = this.targetY - this.y;
-      const easing = 0.08;
-      this.x += dx * easing;
-      this.y += dy * easing;
+    } else if (this.state.isForming) {
+      const { x, y, hasReachedTarget } = calculateNewPosition(
+        { x: this.x, y: this.y },
+        { x: this.position.targetX, y: this.position.targetY }
+      );
       
-      if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) {
-        this.x = this.targetX;
-        this.y = this.targetY;
-        this.isForming = false;
+      this.x = x;
+      this.y = y;
+      
+      if (hasReachedTarget) {
+        this.x = this.position.targetX;
+        this.y = this.position.targetY;
+        this.state.isForming = false;
       }
     } else {
-      this.y += this.speed;
+      this.y += this.config.speed;
       if (this.y >= numberBounds.maxY) {
         this.y = numberBounds.minY;
       }
     }
     
-    if (currentTime - this.lastUpdate > this.updateInterval) {
-      if (!this.isForming) {
+    if (currentTime - this.state.lastUpdate > this.config.updateInterval) {
+      if (!this.state.isForming) {
         this.setToRandomSymbol();
-        const stream = streams[this.streamIndex];
-        if (stream && this.first) {
+        const stream = streams[this.config.streamIndex];
+        if (stream && this.config.first) {
           stream.symbols.forEach((symbol: Symbol, index: number) => {
-            if (!symbol.first) {
+            if (!symbol.config.first) {
               setTimeout(() => {
-                symbol.value = this.value;
+                symbol.state.value = this.state.value;
               }, index * 25);
             }
           });
         }
       }
-      this.lastUpdate = currentTime;
+      this.state.lastUpdate = currentTime;
     }
   }
 
@@ -88,14 +96,14 @@ export class Symbol {
     const isInNumber = pixelColor[0] > 0;
 
     if (!formationStarted || (formationStarted && isInNumber)) {
-      this.p.fill(255, this.opacity);
-      this.p.text(this.value, this.x, this.y);
+      this.p.fill(255, this.state.opacity);
+      this.p.text(this.state.value, this.x, this.y);
     }
   }
 
   startForming(tx: number, ty: number) {
-    this.isForming = true;
-    this.targetX = tx;
-    this.targetY = ty;
+    this.state.isForming = true;
+    this.position.targetX = tx;
+    this.position.targetY = ty;
   }
 }
