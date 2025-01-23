@@ -17,4 +17,5 @@ export interface StreamProps {
   x: number;
   streamIndex: number;
   p: p5;
+  color: string;
 }
