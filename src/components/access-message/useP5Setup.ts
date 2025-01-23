@@ -7,6 +7,7 @@ export const useP5Setup = (type: 'granted' | 'denied') => {
     const symbolSize = 14;
     const message = type === 'granted' ? 'ACCESS GRANTED' : 'ACCESS DENIED';
     const textColor = type === 'granted' ? '#22c55e' : '#ef4444';
+    const streamColor = type === 'granted' ? '#22c55e' : '#ffffff';
     const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.15;
     let targetImage: p5.Graphics;
     
@@ -39,7 +40,12 @@ export const useP5Setup = (type: 'granted' | 'denied') => {
       const streamCount = Math.floor(p.width / streamSpacing);
       for (let i = 0; i < streamCount; i++) {
         const x = i * streamSpacing;
-        const stream = new Stream({ x, streamIndex: i, p });
+        const stream = new Stream({ 
+          x, 
+          streamIndex: i, 
+          p,
+          color: streamColor 
+        });
         streams.push(stream);
       }
     };
