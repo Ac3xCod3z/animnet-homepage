@@ -28,7 +28,10 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
     <div 
       ref={sketchRef} 
       className="fixed inset-0 w-full h-full flex items-center justify-center pointer-events-none"
-      style={{ zIndex: 50 }}
+      style={{ 
+        zIndex: 50,
+        clipPath: 'ellipse(70% 60% at 50% 50%)'  // Creates an elliptical shape
+      }}
     />
   );
 };

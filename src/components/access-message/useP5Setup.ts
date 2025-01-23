@@ -6,8 +6,9 @@ export const useP5Setup = (type: 'granted' | 'denied') => {
     const streams: Stream[] = [];
     const symbolSize = 14;
     const message = type === 'granted' ? 'ACCESS GRANTED' : 'ACCESS DENIED';
+    const matrixGreen = '#0FA0CE'; // Matrix-style bright green
     const textColor = type === 'granted' ? '#22c55e' : '#ef4444';
-    const streamColor = type === 'granted' ? '#22c55e' : '#ffffff';
+    const streamColor = type === 'granted' ? matrixGreen : '#ffffff';
     const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.15;
     let targetImage: p5.Graphics;
     
