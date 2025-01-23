@@ -25,6 +25,16 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
       existingCanvas.remove();
     }
 
+    const sketch = (p: p5) => {
+      const streams: Stream[] = [];
+      const symbolSize = 14;
+      const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
+      let targetImage: p5.Graphics;
+      let formationStarted = false;
+      const formationDelay = 2500;
+      let startTime: number;
+      let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
+
       class Symbol {
         x: number;
         y: number;
@@ -71,7 +81,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           } else if (this.isForming) {
             const dx = this.targetX - this.x;
             const dy = this.targetY - this.y;
-            // Smoother easing for formation
             const easing = 0.08;
             this.x += dx * easing;
             this.y += dy * easing;
@@ -82,20 +91,17 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
               this.isForming = false;
             }
           } else {
-            // Consistent vertical falling motion within the number
             this.y += this.speed;
             if (this.y >= numberBounds.maxY) {
               this.y = numberBounds.minY;
             }
           }
           
-          // Update symbols in a cascading pattern
           if (currentTime - this.lastUpdate > this.updateInterval) {
             if (!this.isForming) {
               this.setToRandomSymbol();
               const stream = streams[this.streamIndex];
               if (stream && this.first) {
-                // Propagate the symbol change down the stream
                 stream.symbols.forEach((symbol, index) => {
                   if (!symbol.first) {
                     setTimeout(() => {
@@ -157,7 +163,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
         }
 
         startForming() {
-          // Ensure symbols form within the number bounds
           this.symbols.forEach((symbol, index) => {
             const targetX = symbol.x;
             const targetY = numberBounds.minY + (index * symbolSize) % (numberBounds.maxY - numberBounds.minY);
@@ -165,16 +170,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           });
         }
       }
-
-    const sketch = (p: p5) => {
-      const streams: Stream[] = [];
-      const symbolSize = 14;
-      const fontSize = Math.min(window.innerWidth, window.innerHeight) * 0.6;
-      let targetImage: p5.Graphics;
-      let formationStarted = false;
-      const formationDelay = 2500;
-      let startTime: number;
-      let numberBounds = { minX: 0, maxX: 0, minY: 0, maxY: 0 };
 
       p.setup = () => {
         const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
@@ -200,7 +195,6 @@ export const AnimatedCounter = ({ count }: AnimatedCounterProps) => {
           maxY: (p.height + textHeight) / 2
         };
 
-        // Create streams only within the number bounds
         const streamSpacing = symbolSize * 1.2;
         const streamCount = Math.floor((numberBounds.maxX - numberBounds.minX) / streamSpacing);
         for (let i = 0; i < streamCount; i++) {
