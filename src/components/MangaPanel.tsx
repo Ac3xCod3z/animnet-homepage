@@ -27,15 +27,6 @@ export const MangaPanel = () => {
       const codeData = await checkCodeExists(validCode);
       if (!codeData) return;
 
-      if (codeData.total_redemptions >= codeData.max_redemptions) {
-        toast({
-          title: "Error",
-          description: "This code has reached its maximum number of redemptions",
-          variant: "destructive",
-        });
-        return;
-      }
-
       const hasRedeemed = await checkExistingRedemption(codeData.id, address);
       if (hasRedeemed) return;
 
@@ -45,7 +36,7 @@ export const MangaPanel = () => {
       
       toast({
         title: "Success",
-        description: `Code redeemed successfully. ${codeData.max_redemptions - (codeData.total_redemptions + 1)} redemptions remaining.`,
+        description: `Code redeemed successfully. ${newRedemptionCount.split('/')[0]} redemptions remaining.`,
       });
 
       setCode("");

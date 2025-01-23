@@ -32,26 +32,6 @@ export const validateRedemptionRequest = (code: string, address: string | undefi
 }
 
 export const checkCodeExists = async (code: string) => {
-  // First, get the current total redemptions
-  const { data: redemptionsData, error: redemptionsError } = await supabase
-    .from('code_redemptions')
-    .select('code_id')
-    .eq('code_id', (
-      await supabase
-        .from('redemption_codes')
-        .select('id')
-        .eq('code', code)
-        .single()
-    ).data?.id);
-
-  if (redemptionsError) {
-    console.error("Error checking redemptions:", redemptionsError);
-    return null;
-  }
-
-  const currentRedemptions = redemptionsData?.length || 0;
-
-  // Then get the code data
   const { data, error } = await supabase
     .from('redemption_codes')
     .select('*')
@@ -60,7 +40,6 @@ export const checkCodeExists = async (code: string) => {
 
   console.log("Code lookup result:", data);
   console.log("Code lookup error:", error);
-  console.log("Current total redemptions:", currentRedemptions);
 
   if (error || !data) {
     console.log("Invalid code or code not found");
@@ -72,9 +51,9 @@ export const checkCodeExists = async (code: string) => {
     return null;
   }
 
-  // Check if maximum redemptions reached before proceeding
-  if (currentRedemptions >= data.max_redemptions) {
-    console.log("Maximum redemptions reached:", currentRedemptions, ">=", data.max_redemptions);
+  // Check if maximum redemptions reached
+  if (data.total_redemptions >= data.max_redemptions) {
+    console.log("Maximum redemptions reached:", data.total_redemptions, ">=", data.max_redemptions);
     toast({
       title: "Error",
       description: "All redemption codes have been used",
@@ -121,29 +100,7 @@ export const checkExistingRedemption = async (codeId: string, address: string) =
 }
 
 export const processRedemption = async (codeData: any, address: string) => {
-  // Get current total redemptions count from code_redemptions table
-  const { data: redemptionsData, error: countError } = await supabase
-    .from('code_redemptions')
-    .select('code_id')
-    .eq('code_id', codeData.id);
-
-  if (countError) throw countError;
-  
-  const currentRedemptions = redemptionsData?.length || 0;
-  console.log('Current total redemptions:', currentRedemptions);
-
-  // Double-check max redemptions haven't been reached
-  if (currentRedemptions >= codeData.max_redemptions) {
-    console.log("Maximum redemptions reached during processing");
-    toast({
-      title: "Error",
-      description: "All redemption codes have been used",
-      variant: "destructive",
-    });
-    return `0/${codeData.max_redemptions}`;
-  }
-
-  // Insert redemption
+  // Insert redemption record
   const { error: insertError } = await supabase
     .from('code_redemptions')
     .insert([{
@@ -154,20 +111,18 @@ export const processRedemption = async (codeData: any, address: string) => {
   console.log("Redemption insert error:", insertError);
   if (insertError) throw insertError;
 
-  // Update redemption count
-  const { error: updateError } = await supabase
+  // Get updated redemption count
+  const { data: updatedData, error: updateError } = await supabase
     .from('redemption_codes')
-    .update({ 
-      total_redemptions: currentRedemptions + 1,
-      updated_at: new Date().toISOString()
-    })
-    .eq('id', codeData.id);
+    .select('total_redemptions, max_redemptions')
+    .eq('id', codeData.id)
+    .single();
 
-  console.log("Update redemption count error:", updateError);
-  if (updateError) throw updateError;
+  console.log("Updated redemption data:", updatedData);
+  if (updateError || !updatedData) throw updateError;
 
-  const remaining = codeData.max_redemptions - (currentRedemptions + 1);
-  console.log(`Redemption processed. Remaining: ${remaining}, Total: ${codeData.max_redemptions}`);
+  const remaining = updatedData.max_redemptions - updatedData.total_redemptions;
+  console.log(`Redemption processed. Remaining: ${remaining}, Total: ${updatedData.max_redemptions}`);
   
-  return `${remaining}/${codeData.max_redemptions}`;
+  return `${remaining}/${updatedData.max_redemptions}`;
 }
