@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 
 const Redeem = () => {
   const [redemptionCount, setRedemptionCount] = useState<string | null>(null);
+  const [showCounter, setShowCounter] = useState(true);
 
   useEffect(() => {
     const fetchRedemptionCount = async () => {
@@ -30,7 +31,6 @@ const Redeem = () => {
 
     fetchRedemptionCount();
 
-    // Subscribe to both tables for real-time updates
     const codeChannel = supabase
       .channel('redemption_updates')
       .on(
@@ -47,7 +47,13 @@ const Redeem = () => {
             const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
             console.log('New remaining redemptions:', remaining);
             if (remaining >= 0) {
-              setRedemptionCount(remaining.toString());
+              // Hide counter during access message
+              setShowCounter(false);
+              // Update count and show counter after a delay
+              setTimeout(() => {
+                setRedemptionCount(remaining.toString());
+                setShowCounter(true);
+              }, 5000); // Match the access message duration
             }
           }
         }
@@ -65,7 +71,6 @@ const Redeem = () => {
         },
         (payload: any) => {
           console.log('Redeem: New redemption recorded:', payload);
-          // This will trigger a refetch to ensure we have the latest count
           fetchRedemptionCount();
         }
       )
@@ -84,7 +89,7 @@ const Redeem = () => {
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="flex-1 flex">
           <div className="w-full relative">
-            {redemptionCount !== null && (
+            {redemptionCount !== null && showCounter && (
               <AnimatedCounter key={`counter-${redemptionCount}`} count={redemptionCount} />
             )}
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
