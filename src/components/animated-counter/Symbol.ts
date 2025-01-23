@@ -10,6 +10,7 @@ export class Symbol {
   private position: SymbolPosition;
   private config: SymbolConfig;
   private p: p5;
+  private isDissolving: boolean = false;
 
   constructor({ x, y, speed, first, streamIndex, p }: SymbolProps) {
     this.p = p;
@@ -40,6 +41,18 @@ export class Symbol {
     this.setToRandomSymbol();
   }
 
+  startDissolving() {
+    this.isDissolving = true;
+    this.state.isForming = false;
+  }
+
+  updateDissolution(progress: number) {
+    if (this.isDissolving) {
+      this.state.opacity = this.p.map(progress, 0, 1, this.state.opacity, 0);
+      this.config.speed *= 1.01; // Gradually increase fall speed
+    }
+  }
+
   setToRandomSymbol() {
     this.state.value = getRandomSymbol(this.p);
   }
@@ -47,7 +60,7 @@ export class Symbol {
   update(formationStarted: boolean, numberBounds: any, streams: any[], symbolSize: number) {
     const currentTime = this.p.millis();
     
-    if (!formationStarted) {
+    if (!formationStarted || this.isDissolving) {
       this.y += this.config.speed;
       if (this.y >= numberBounds.maxY) {
         this.y = numberBounds.minY - symbolSize;
@@ -65,11 +78,6 @@ export class Symbol {
         this.x = this.position.targetX;
         this.y = this.position.targetY;
         this.state.isForming = false;
-      }
-    } else {
-      this.y += this.config.speed;
-      if (this.y >= numberBounds.maxY) {
-        this.y = numberBounds.minY;
       }
     }
     
@@ -95,7 +103,7 @@ export class Symbol {
     const pixelColor = targetImage.get(Math.floor(this.x), Math.floor(this.y));
     const isInNumber = pixelColor[0] > 0;
 
-    if (!formationStarted || (formationStarted && isInNumber)) {
+    if (!formationStarted || (formationStarted && isInNumber) || this.isDissolving) {
       this.p.fill(255, this.state.opacity);
       this.p.text(this.state.value, this.x, this.y);
     }

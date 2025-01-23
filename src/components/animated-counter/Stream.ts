@@ -7,6 +7,7 @@ export class Stream {
   totalSymbols: number;
   speed: number;
   private p: p5;
+  private isDissolving: boolean = false;
 
   constructor({ x, streamIndex, p }: StreamProps) {
     this.p = p;
@@ -26,6 +27,18 @@ export class Stream {
         p: this.p
       });
       this.symbols.push(symbol);
+    }
+  }
+
+  startDissolving() {
+    this.isDissolving = true;
+    this.speed *= 2; // Double the fall speed during dissolution
+    this.symbols.forEach(symbol => symbol.startDissolving());
+  }
+
+  updateDissolution(progress: number) {
+    if (this.isDissolving) {
+      this.symbols.forEach(symbol => symbol.updateDissolution(progress));
     }
   }
 
