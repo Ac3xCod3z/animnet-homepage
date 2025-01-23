@@ -10,6 +10,7 @@ export class Symbol {
   private position: SymbolPosition;
   private config: SymbolConfig;
   private p: p5;
+  private dissolving: boolean = false;
 
   constructor({ x, y, speed, first, streamIndex, p }: SymbolProps) {
     this.p = p;
@@ -44,10 +45,22 @@ export class Symbol {
     this.state.value = getRandomSymbol(this.p);
   }
 
+  startDissolving() {
+    this.dissolving = true;
+    this.state.isForming = false;
+  }
+
+  isFullyDissolved() {
+    return this.dissolving && this.y > this.p.height;
+  }
+
   update(formationStarted: boolean, numberBounds: any, streams: any[], symbolSize: number) {
     const currentTime = this.p.millis();
     
-    if (!formationStarted) {
+    if (this.dissolving) {
+      this.y += this.config.speed * 2;
+      this.state.opacity = Math.max(0, this.state.opacity - 5);
+    } else if (!formationStarted) {
       this.y += this.config.speed;
       if (this.y >= numberBounds.maxY) {
         this.y = numberBounds.minY - symbolSize;
@@ -74,7 +87,7 @@ export class Symbol {
     }
     
     if (currentTime - this.state.lastUpdate > this.config.updateInterval) {
-      if (!this.state.isForming) {
+      if (!this.state.isForming && !this.dissolving) {
         this.setToRandomSymbol();
         const stream = streams[this.config.streamIndex];
         if (stream && this.config.first) {
@@ -103,6 +116,8 @@ export class Symbol {
 
   startForming(tx: number, ty: number) {
     this.state.isForming = true;
+    this.dissolving = false;
+    this.state.opacity = this.config.first ? 255 : this.p.random(70, 100);
     this.position.targetX = tx;
     this.position.targetY = ty;
   }

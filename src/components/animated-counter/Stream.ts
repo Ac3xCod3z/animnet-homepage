@@ -7,6 +7,7 @@ export class Stream {
   totalSymbols: number;
   speed: number;
   private p: p5;
+  private dissolving: boolean = false;
 
   constructor({ x, streamIndex, p }: StreamProps) {
     this.p = p;
@@ -29,6 +30,17 @@ export class Stream {
     }
   }
 
+  dissolve() {
+    this.dissolving = true;
+    this.symbols.forEach(symbol => {
+      symbol.startDissolving();
+    });
+  }
+
+  isFullyDissolved() {
+    return this.symbols.every(symbol => symbol.isFullyDissolved());
+  }
+
   render(targetImage: p5.Graphics, formationStarted: boolean, numberBounds: any, streams: Stream[], symbolSize: number) {
     this.symbols.forEach(symbol => {
       symbol.render(targetImage, formationStarted);
@@ -37,6 +49,7 @@ export class Stream {
   }
 
   startForming(numberBounds: any, symbolSize: number) {
+    this.dissolving = false;
     this.symbols.forEach((symbol, index) => {
       const targetX = symbol.x;
       const targetY = numberBounds.minY + (index * symbolSize) % (numberBounds.maxY - numberBounds.minY);
