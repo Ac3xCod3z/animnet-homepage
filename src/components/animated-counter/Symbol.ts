@@ -13,7 +13,7 @@ export class Symbol {
   private dissolving: boolean = false;
   private formationProgress: number = 0;
   private formationStartTime: number = 0;
-  private formationDuration: number = 1500; // Duration in milliseconds
+  private formationDuration: number = 2000; // Increased duration for smoother animation
 
   constructor({ x, y, speed, first, streamIndex, p }: SymbolProps) {
     this.p = p;
@@ -73,7 +73,7 @@ export class Symbol {
         this.formationStartTime = currentTime;
       }
       
-      // Calculate formation progress
+      // Calculate formation progress with smoother easing
       this.formationProgress = Math.min(
         (currentTime - this.formationStartTime) / this.formationDuration,
         1

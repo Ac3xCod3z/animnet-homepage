@@ -10,24 +10,34 @@ export const calculateNewPosition = (
   target: { x: number; y: number },
   progress: number = 0
 ) => {
-  // Spiral parameters
-  const spiralRadius = 50 * (1 - progress); // Radius decreases as we get closer
-  const spiralAngle = progress * Math.PI * 4; // 2 complete rotations
+  // Enhanced 3D spiral parameters
+  const baseRadius = 100; // Larger initial radius
+  const spiralRadius = baseRadius * Math.pow(1 - progress, 2); // Quadratic decrease for smoother transition
+  const verticalStretch = 1.5; // Stretch the spiral vertically
+  const rotations = 3; // Number of rotations during formation
+  const spiralAngle = progress * Math.PI * 2 * rotations;
   
-  // Calculate spiral offset
-  const spiralX = Math.cos(spiralAngle) * spiralRadius;
-  const spiralY = Math.sin(spiralAngle) * spiralRadius;
+  // Add perspective effect
+  const perspectiveScale = 0.5 + (progress * 0.5); // Scale from 0.5 to 1.0
   
-  // Interpolate between current and target position with easing
-  const easing = 0.05;
+  // Calculate 3D-like spiral motion
+  const spiralX = Math.cos(spiralAngle) * spiralRadius * perspectiveScale;
+  const spiralY = (Math.sin(spiralAngle) * spiralRadius * verticalStretch * perspectiveScale) + 
+                  (Math.sin(progress * Math.PI) * 50); // Add vertical wave
+  
+  // Smooth easing function
+  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+  const easedProgress = easeOutCubic(progress);
+  
+  // Calculate position with enhanced easing
   const dx = target.x - current.x;
   const dy = target.y - current.y;
   
-  // Add spiral motion to the interpolated position
-  const newX = current.x + (dx * easing) + spiralX;
-  const newY = current.y + (dy * easing) + spiralY;
+  // Combine linear movement with spiral
+  const newX = current.x + (dx * easedProgress) + spiralX;
+  const newY = current.y + (dy * easedProgress) + spiralY;
   
-  // Calculate distance to target for completion check
+  // Smoother completion check
   const distanceToTarget = Math.sqrt(
     Math.pow(target.x - newX, 2) + 
     Math.pow(target.y - newY, 2)
@@ -36,6 +46,6 @@ export const calculateNewPosition = (
   return {
     x: newX,
     y: newY,
-    hasReachedTarget: distanceToTarget < 1
+    hasReachedTarget: distanceToTarget < 1 || progress >= 0.99
   };
 };
