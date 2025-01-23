@@ -47,13 +47,11 @@ const Redeem = () => {
             const remaining = payload.new.max_redemptions - payload.new.total_redemptions;
             console.log('New remaining redemptions:', remaining);
             if (remaining >= 0) {
-              // Hide counter during access message
               setShowCounter(false);
-              // Update count and show counter after a delay
               setTimeout(() => {
                 setRedemptionCount(remaining.toString());
                 setShowCounter(true);
-              }, 5000); // Match the access message duration
+              }, 5000);
             }
           }
         }
@@ -89,9 +87,11 @@ const Redeem = () => {
       <div className="relative min-h-screen flex flex-col overflow-hidden">
         <div className="flex-1 flex">
           <div className="w-full relative">
-            {redemptionCount !== null && showCounter && (
-              <AnimatedCounter key={`counter-${redemptionCount}`} count={redemptionCount} />
-            )}
+            <div className={`transition-opacity duration-500 ${showCounter ? 'opacity-100' : 'opacity-0'}`}>
+              {redemptionCount !== null && showCounter && (
+                <AnimatedCounter key={`counter-${redemptionCount}`} count={redemptionCount} />
+              )}
+            </div>
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
               <MangaPanel />
             </div>

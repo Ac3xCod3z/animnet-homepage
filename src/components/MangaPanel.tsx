@@ -20,18 +20,16 @@ export const MangaPanel = () => {
 
   return (
     <>
-      {!showAccessMessage && (
-        <div className="w-full max-w-[400px] ml-16 lg:ml-32 space-y-8">
-          <TopPanel 
-            code={code}
-            setCode={setCode}
-          />
-          <BottomPanel 
-            isLoading={isLoading}
-            onSubmit={handleSubmit}
-          />
-        </div>
-      )}
+      <div className={`w-full max-w-[400px] ml-16 lg:ml-32 space-y-8 transition-opacity duration-500 ${showAccessMessage ? 'opacity-0' : 'opacity-100'}`}>
+        <TopPanel 
+          code={code}
+          setCode={setCode}
+        />
+        <BottomPanel 
+          isLoading={isLoading}
+          onSubmit={handleSubmit}
+        />
+      </div>
       <AccessMessage 
         type={accessGranted ? 'granted' : 'denied'}
         show={showAccessMessage}
