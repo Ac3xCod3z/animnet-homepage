@@ -10,42 +10,41 @@ export const calculateNewPosition = (
   target: { x: number; y: number },
   progress: number = 0
 ) => {
-  // Enhanced 3D spiral parameters
-  const baseRadius = 100; // Larger initial radius
-  const spiralRadius = baseRadius * Math.pow(1 - progress, 2); // Quadratic decrease for smoother transition
-  const verticalStretch = 1.5; // Stretch the spiral vertically
-  const rotations = 3; // Number of rotations during formation
-  const spiralAngle = progress * Math.PI * 2 * rotations;
+  // Custom elastic easing function for natural motion
+  const easeOutElastic = (t: number) => {
+    const p = 0.3; // Period
+    return Math.pow(2, -10 * t) * Math.sin((t - p / 4) * (2 * Math.PI) / p) + 1;
+  };
   
-  // Add perspective effect
-  const perspectiveScale = 0.5 + (progress * 0.5); // Scale from 0.5 to 1.0
+  // Combine elastic easing with smooth cubic
+  const easeOutCombined = (t: number) => {
+    const elastic = easeOutElastic(t);
+    const cubic = 1 - Math.pow(1 - t, 3);
+    return elastic * 0.7 + cubic * 0.3; // Blend both easing functions
+  };
+
+  const easedProgress = easeOutCombined(progress);
   
-  // Calculate 3D-like spiral motion
-  const spiralX = Math.cos(spiralAngle) * spiralRadius * perspectiveScale;
-  const spiralY = (Math.sin(spiralAngle) * spiralRadius * verticalStretch * perspectiveScale) + 
-                  (Math.sin(progress * Math.PI) * 50); // Add vertical wave
+  // Calculate wave effect
+  const waveAmplitude = 50 * (1 - progress); // Decreases as animation progresses
+  const waveFrequency = 2;
+  const wave = Math.sin(progress * Math.PI * waveFrequency) * waveAmplitude;
   
-  // Smooth easing function
-  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
-  const easedProgress = easeOutCubic(progress);
+  // Add slight rotation effect
+  const rotationRadius = 30 * (1 - progress);
+  const rotationAngle = progress * Math.PI;
+  const rotationX = Math.cos(rotationAngle) * rotationRadius;
   
-  // Calculate position with enhanced easing
+  // Calculate final position with all effects combined
   const dx = target.x - current.x;
   const dy = target.y - current.y;
   
-  // Combine linear movement with spiral
-  const newX = current.x + (dx * easedProgress) + spiralX;
-  const newY = current.y + (dy * easedProgress) + spiralY;
-  
-  // Smoother completion check
-  const distanceToTarget = Math.sqrt(
-    Math.pow(target.x - newX, 2) + 
-    Math.pow(target.y - newY, 2)
-  );
-  
+  const newX = current.x + (dx * easedProgress) + rotationX;
+  const newY = current.y + (dy * easedProgress) + wave;
+
   return {
     x: newX,
     y: newY,
-    hasReachedTarget: distanceToTarget < 1 || progress >= 0.99
+    hasReachedTarget: progress >= 0.99
   };
 };
