@@ -30,7 +30,10 @@ export const AccessMessage = ({ type, show }: AccessMessageProps) => {
       className="fixed inset-0 w-full h-full flex items-center justify-center pointer-events-none"
       style={{ 
         zIndex: 50,
-        clipPath: 'ellipse(70% 60% at 50% 50%)'  // Creates an elliptical shape
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        clipPath: 'ellipse(70% 60% at 50% 50%)'
       }}
     />
   );

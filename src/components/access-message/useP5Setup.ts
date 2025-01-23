@@ -15,9 +15,7 @@ export const useP5Setup = (type: 'granted' | 'denied') => {
     p.setup = () => {
       console.log('Access Message P5 Setup: Initializing with type:', type);
       const canvas = p.createCanvas(window.innerWidth, window.innerHeight);
-      if (canvas.parent()) {
-        canvas.parent(canvas.parent());
-      }
+      canvas.parent(sketchRef.current);
       p.background(0);
       p.textSize(symbolSize);
       p.textFont('Consolas');
@@ -31,6 +29,7 @@ export const useP5Setup = (type: 'granted' | 'denied') => {
       img.background(0);
       img.fill(textColor);
       img.textSize(fontSize);
+      img.textFont('Orbitron');
       img.textAlign(p.CENTER, p.CENTER);
       img.text(message, p.width / 2, p.height / 2);
       return img;
@@ -39,6 +38,7 @@ export const useP5Setup = (type: 'granted' | 'denied') => {
     const initializeStreams = () => {
       const streamSpacing = symbolSize * 1.2;
       const streamCount = Math.floor(p.width / streamSpacing);
+      
       for (let i = 0; i < streamCount; i++) {
         const x = i * streamSpacing;
         const stream = new Stream({ 
