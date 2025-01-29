@@ -10,6 +10,21 @@ export const FlappyBird = ({ onScoreChange, onGameOver }: FlappyBirdProps) => {
   const gameRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Add event listener to prevent spacebar scrolling
+  useEffect(() => {
+    const preventSpacebarScroll = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+      }
+    };
+
+    window.addEventListener('keydown', preventSpacebarScroll);
+
+    return () => {
+      window.removeEventListener('keydown', preventSpacebarScroll);
+    };
+  }, []);
+
   useEffect(() => {
     if (!gameRef.current) return;
 
