@@ -3,7 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { MangaPanel } from "@/components/MangaPanel";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
-import { Pong } from "@/components/game/Pong";
+import { PacMan } from "@/components/game/PacMan";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,7 +20,6 @@ const Redeem = () => {
   const { address, connectWallet } = useAuth();
 
   useEffect(() => {
-    // If wallet is already connected, we can skip the wallet state
     if (address && currentState === 'wallet') {
       setCurrentState('code');
     }
@@ -54,7 +53,7 @@ const Redeem = () => {
   const handleGameComplete = (score: number) => {
     console.log('Game completed with score:', score);
     setGameScore(score);
-    if (score >= 10) {
+    if (score >= 3) {
       setCurrentState(address ? 'code' : 'wallet');
     }
   };
@@ -80,9 +79,9 @@ const Redeem = () => {
             {currentState === 'game' && (
               <div className="max-w-2xl mx-auto mt-8">
                 <h2 className="text-2xl font-bold text-white text-center mb-4">
-                  Score 10+ points to continue
+                  Collect 3 dots to continue
                 </h2>
-                <Pong 
+                <PacMan 
                   onScoreChange={setGameScore} 
                   onGameOver={() => handleGameComplete(gameScore)}
                 />
