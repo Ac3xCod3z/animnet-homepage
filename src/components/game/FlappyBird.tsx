@@ -33,7 +33,7 @@ export const FlappyBird = ({ onScoreChange, onGameOver }: FlappyBirdProps) => {
       x: 64,
       velocity: 0,
       gravity: 0.6,
-      lift: -15,
+      lift: -10, // Reduced from -15 to -10 for softer jumps
     };
 
     let pipes: { x: number; top: number; bottom: number }[] = [];
