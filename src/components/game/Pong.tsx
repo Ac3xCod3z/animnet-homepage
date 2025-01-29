@@ -103,11 +103,12 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
         // Ball collision with paddles
         // Left paddle (player) collision
         if (
-          ball.x <= paddle.x + paddle.width + ball.size / 2 &&
-          ball.x >= paddle.x &&
-          ball.y >= paddle.y - ball.size / 2 &&
-          ball.y <= paddle.y + paddle.height + ball.size / 2
+          ball.x - ball.size / 2 <= paddle.x + paddle.width &&
+          ball.x + ball.size / 2 >= paddle.x &&
+          ball.y >= paddle.y &&
+          ball.y <= paddle.y + paddle.height
         ) {
+          console.log('Player paddle collision detected!');
           ball.speedX = Math.abs(ball.speedX); // Ensure ball moves right
           const relativeIntersectY = (paddle.y + (paddle.height / 2)) - ball.y;
           const normalizedRelativeIntersectY = relativeIntersectY / (paddle.height / 2);
