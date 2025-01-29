@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import p5 from 'p5';
+import { CELL_SIZE, MAZE_LAYOUT } from './constants/mazeConfig';
+import { checkCollision, createDots, moveGhost } from './utils/gameUtils';
+import { GameState, Ghost, Player } from './types/gameTypes';
 
 interface PacManProps {
   onScoreChange: (score: number) => void;
@@ -13,127 +16,49 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
   useEffect(() => {
     if (!gameRef.current) return;
 
-    let player = {
-      x: 40,
-      y: 40,
-      size: 20,
-      speed: 2,
-      direction: 0, // 0: right, 1: down, 2: left, 3: up
-      mouthOpen: true
+    const initialState: GameState = {
+      player: {
+        x: 40,
+        y: 40,
+        size: 20,
+        speed: 2,
+        direction: 0,
+        mouthOpen: true
+      },
+      ghosts: [
+        { x: 360, y: 40, color: [255, 0, 0], direction: 2 },
+        { x: 360, y: 360, color: [255, 182, 255], direction: 3 },
+        { x: 40, y: 360, color: [0, 255, 255], direction: 0 }
+      ],
+      dots: [],
+      score: 0,
+      totalDots: 0,
+      gameStarted: false
     };
 
-    let ghosts = [
-      { x: 360, y: 40, color: [255, 0, 0], direction: 2 },    // Red ghost
-      { x: 360, y: 360, color: [255, 182, 255], direction: 3 }, // Pink ghost
-      { x: 40, y: 360, color: [0, 255, 255], direction: 0 }   // Cyan ghost
-    ];
-
-    // Define maze walls - 1 represents walls, 0 represents paths
-    const maze = [
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-      [1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1],
-      [1,0,1,1,1,0,1,0,1,1,1,1,0,1,0,1,1,1,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,1,1,1,0,1,1,1,0,0,1,1,1,0,1,1,1,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,1,1,1,0,1,0,1,1,1,1,0,1,0,1,1,1,0,1],
-      [1,0,0,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,0,1],
-      [1,1,1,1,1,0,1,1,1,0,0,1,1,1,0,1,1,1,1,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,1,1,1,0,1,0,1,1,1,1,0,1,0,1,1,1,0,1],
-      [1,0,0,0,1,0,1,0,0,0,0,0,0,1,0,1,0,0,0,1],
-      [1,1,1,0,1,0,1,0,1,1,1,1,0,1,0,1,0,1,1,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,1,1,1,0,1,1,1,0,0,1,1,1,0,1,1,1,0,1],
-      [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-      [1,0,1,1,1,0,1,0,1,1,1,1,0,1,0,1,1,1,0,1],
-      [1,0,0,0,1,0,1,0,0,0,0,0,0,1,0,1,0,0,0,1],
-      [1,0,1,0,0,0,0,0,1,1,1,1,0,0,0,0,0,1,0,1],
-      [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-    ];
-
-    let dots: { x: number; y: number; }[] = [];
-    let score = 0;
-    let totalDots = 0;
-    let gameStarted = false;
-    const cellSize = 20;
-
     const sketch = (p: p5) => {
+      let gameState: GameState = { ...initialState };
+
+      const resetGame = () => {
+        const { dots, totalDots } = createDots();
+        gameState = {
+          ...initialState,
+          dots,
+          totalDots
+        };
+        onScoreChange(0);
+      };
+
       p.setup = () => {
         console.log('Setting up Pac-Man game');
         p.createCanvas(400, 400);
         resetGame();
       };
 
-      const resetGame = () => {
-        // Reset player position
-        player.x = 40;
-        player.y = 40;
-        player.direction = 0;
-        score = 0;
-        onScoreChange(0);
-        
-        // Create dots in empty spaces
-        dots = [];
-        totalDots = 0;
-        for (let row = 0; row < maze.length; row++) {
-          for (let col = 0; col < maze[0].length; col++) {
-            if (maze[row][col] === 0) {
-              dots.push({ 
-                x: col * cellSize + cellSize/2, 
-                y: row * cellSize + cellSize/2 
-              });
-              totalDots++;
-            }
-          }
-        }
-
-        // Reset ghost positions
-        ghosts = [
-          { x: 360, y: 40, color: [255, 0, 0], direction: 2 },
-          { x: 360, y: 360, color: [255, 182, 255], direction: 3 },
-          { x: 40, y: 360, color: [0, 255, 255], direction: 0 }
-        ];
-      };
-
-      const moveGhosts = () => {
-        ghosts.forEach(ghost => {
-          // Try to maintain current direction
-          let nextX = ghost.x;
-          let nextY = ghost.y;
-          const speed = 1;
-
-          switch (ghost.direction) {
-            case 0: nextX += speed; break;
-            case 1: nextY += speed; break;
-            case 2: nextX -= speed; break;
-            case 3: nextY -= speed; break;
-          }
-
-          // Check if next position hits a wall
-          const nextCol = Math.floor(nextX / cellSize);
-          const nextRow = Math.floor(nextY / cellSize);
-          
-          if (maze[nextRow] && maze[nextRow][nextCol] === 0) {
-            ghost.x = nextX;
-            ghost.y = nextY;
-          } else {
-            // Change direction if hit wall
-            ghost.direction = Math.floor(Math.random() * 4);
-          }
-        });
-      };
-
-      const checkCollision = (x: number, y: number) => {
-        const row = Math.floor(y / cellSize);
-        const col = Math.floor(x / cellSize);
-        return maze[row][col] === 1;
-      };
-
       p.draw = () => {
         p.background(0);
 
-        if (!gameStarted) {
+        if (!gameState.gameStarted) {
           p.fill(255);
           p.textSize(20);
           p.textAlign(p.CENTER);
@@ -145,70 +70,73 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
 
         // Draw maze
         p.stroke(0, 0, 255);
-        for (let row = 0; row < maze.length; row++) {
-          for (let col = 0; col < maze[0].length; col++) {
-            if (maze[row][col] === 1) {
+        for (let row = 0; row < MAZE_LAYOUT.length; row++) {
+          for (let col = 0; col < MAZE_LAYOUT[0].length; col++) {
+            if (MAZE_LAYOUT[row][col] === 1) {
               p.fill(0, 0, 255);
-              p.rect(col * cellSize, row * cellSize, cellSize, cellSize);
+              p.rect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
             }
           }
         }
 
-        // Update player direction based on input
-        if (p.keyIsDown(p.RIGHT_ARROW)) player.direction = 0;
-        if (p.keyIsDown(p.DOWN_ARROW)) player.direction = 1;
-        if (p.keyIsDown(p.LEFT_ARROW)) player.direction = 2;
-        if (p.keyIsDown(p.UP_ARROW)) player.direction = 3;
+        // Update player direction and position
+        if (p.keyIsDown(p.RIGHT_ARROW)) gameState.player.direction = 0;
+        if (p.keyIsDown(p.DOWN_ARROW)) gameState.player.direction = 1;
+        if (p.keyIsDown(p.LEFT_ARROW)) gameState.player.direction = 2;
+        if (p.keyIsDown(p.UP_ARROW)) gameState.player.direction = 3;
 
-        // Move player
-        let nextX = player.x;
-        let nextY = player.y;
-        switch (player.direction) {
-          case 0: nextX += player.speed; break;
-          case 1: nextY += player.speed; break;
-          case 2: nextX -= player.speed; break;
-          case 3: nextY -= player.speed; break;
+        let nextX = gameState.player.x;
+        let nextY = gameState.player.y;
+        
+        switch (gameState.player.direction) {
+          case 0: nextX += gameState.player.speed; break;
+          case 1: nextY += gameState.player.speed; break;
+          case 2: nextX -= gameState.player.speed; break;
+          case 3: nextY -= gameState.player.speed; break;
         }
 
-        // Check wall collision before updating position
         if (!checkCollision(nextX, nextY)) {
-          player.x = nextX;
-          player.y = nextY;
+          gameState.player.x = nextX;
+          gameState.player.y = nextY;
         }
 
-        // Move and draw ghosts
-        moveGhosts();
-        ghosts.forEach(ghost => {
+        // Update and draw ghosts
+        gameState.ghosts = gameState.ghosts.map(ghost => {
+          const newPos = moveGhost(ghost, 1);
+          if (Math.random() < 0.02) {
+            ghost.direction = Math.floor(Math.random() * 4);
+          }
+          return { ...ghost, ...newPos };
+        });
+
+        gameState.ghosts.forEach(ghost => {
           p.fill(ghost.color);
           p.noStroke();
-          p.circle(ghost.x, ghost.y, player.size);
+          p.circle(ghost.x, ghost.y, gameState.player.size);
 
-          // Check ghost collision
-          const distance = p.dist(player.x, player.y, ghost.x, ghost.y);
-          if (distance < player.size) {
+          const distance = p.dist(gameState.player.x, gameState.player.y, ghost.x, ghost.y);
+          if (distance < gameState.player.size) {
             console.log('Ghost collision! Game over');
-            gameStarted = false;
+            gameState.gameStarted = false;
             onGameOver();
             resetGame();
             return;
           }
         });
 
-        // Draw dots and check collection
+        // Draw and check dots
         p.fill(255);
-        dots = dots.filter(dot => {
-          const distance = p.dist(player.x, player.y, dot.x, dot.y);
-          if (distance < player.size / 2) {
-            score++;
-            console.log('Score increased:', score);
-            onScoreChange(score);
+        gameState.dots = gameState.dots.filter(dot => {
+          const distance = p.dist(gameState.player.x, gameState.player.y, dot.x, dot.y);
+          if (distance < gameState.player.size / 2) {
+            gameState.score++;
+            onScoreChange(gameState.score);
             
-            // Win condition: collect 75% of dots
-            if (score >= Math.ceil(totalDots * 0.75)) {
-              console.log('Game won! Final score:', score);
+            if (gameState.score >= Math.ceil(gameState.totalDots * 0.75)) {
+              console.log('Game won! Final score:', gameState.score);
               onGameOver();
               resetGame();
-              gameStarted = false;
+              gameState.gameStarted = false;
               return false;
             }
             return false;
@@ -220,23 +148,22 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
         // Draw Pac-Man
         p.fill(255, 255, 0);
         p.push();
-        p.translate(player.x, player.y);
-        p.rotate(player.direction * p.HALF_PI);
+        p.translate(gameState.player.x, gameState.player.y);
+        p.rotate(gameState.player.direction * p.HALF_PI);
         
-        // Animate mouth
-        player.mouthOpen = p.frameCount % 30 < 15;
-        if (player.mouthOpen) {
-          p.arc(0, 0, player.size, player.size, p.PI / 6, -p.PI / 6);
+        gameState.player.mouthOpen = p.frameCount % 30 < 15;
+        if (gameState.player.mouthOpen) {
+          p.arc(0, 0, gameState.player.size, gameState.player.size, p.PI / 6, -p.PI / 6);
         } else {
-          p.circle(0, 0, player.size);
+          p.circle(0, 0, gameState.player.size);
         }
         p.pop();
       };
 
       p.mousePressed = () => {
-        if (!gameStarted && p.mouseX > 0 && p.mouseX < p.width && 
+        if (!gameState.gameStarted && p.mouseX > 0 && p.mouseX < p.width && 
             p.mouseY > 0 && p.mouseY < p.height) {
-          gameStarted = true;
+          gameState.gameStarted = true;
           resetGame();
         }
       };
