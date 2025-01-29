@@ -53,9 +53,8 @@ const Redeem = () => {
   const handleGameComplete = (score: number) => {
     console.log('Game completed with score:', score);
     setGameScore(score);
-    if (score >= 3) {
-      setCurrentState(address ? 'code' : 'wallet');
-    }
+    // The game component now handles the win condition internally
+    setCurrentState(address ? 'code' : 'wallet');
   };
 
   const handleWalletConnect = async () => {
@@ -79,7 +78,7 @@ const Redeem = () => {
             {currentState === 'game' && (
               <div className="max-w-2xl mx-auto mt-8">
                 <h2 className="text-2xl font-bold text-white text-center mb-4">
-                  Collect 3 dots to continue
+                  Collect dots and avoid ghosts to continue
                 </h2>
                 <PacMan 
                   onScoreChange={setGameScore} 
