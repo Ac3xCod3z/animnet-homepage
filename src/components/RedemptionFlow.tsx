@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FlappyBird } from './game/FlappyBird';
+import { PacMan } from './game/PacMan';
 import ReCAPTCHA from 'react-google-recaptcha';
 import { getDeviceFingerprint } from '@/utils/fingerprint';
 import { supabase } from "@/integrations/supabase/client";
@@ -36,7 +36,7 @@ export const RedemptionFlow = ({
     } else {
       toast({
         title: "Score too low",
-        description: "You need to score at least 10 points to proceed",
+        description: "You need to score at least 3 points to proceed",
         variant: "destructive",
       });
     }
@@ -96,9 +96,9 @@ export const RedemptionFlow = ({
       {!showCaptcha ? (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-white">
-            Score 3 points to proceed
+            Collect 3 dots to proceed
           </h3>
-          <FlappyBird 
+          <PacMan 
             onScoreChange={setGameScore} 
             onGameOver={handleGameOver}
           />
