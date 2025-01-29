@@ -34,18 +34,18 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
       };
 
       const setupGame = () => {
-        // Initialize cars in three lanes with better spacing
+        // Initialize cars in three lanes
         cars = [
           { x: 50, y: 280, width: 40, speed: 3 },
           { x: 250, y: 320, width: 40, speed: -2.5 },
           { x: 150, y: 360, width: 40, speed: 2 }
         ];
 
-        // Initialize logs with better initial positions and spacing
+        // Initialize logs with better spacing and closer positions
         logs = [
-          { x: 50, y: 240, width: 80, speed: 2 },    // First log closer to safe zone
-          { x: 200, y: 200, width: 80, speed: -1.5 },
-          { x: 100, y: 160, width: 80, speed: 1.8 }
+          { x: 50, y: 320, width: 100, speed: 2 },    // First log much closer to start
+          { x: 200, y: 280, width: 100, speed: -1.5 }, // Second log between first and last
+          { x: 100, y: 240, width: 100, speed: 1.8 }  // Last log closer to goal
         ];
 
         frog.x = 200;
@@ -53,14 +53,13 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
         score = 0;
         successfulCrossings = 0;
         onScoreChange(0);
-        gameStarted = false;  // Reset game started state
       };
 
       p.draw = () => {
         p.background(0);
 
         if (!gameStarted) {
-          // Draw start screen with clear instructions
+          // Draw start screen
           p.fill(255);
           p.textSize(20);
           p.textAlign(p.CENTER);
@@ -77,7 +76,7 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
 
         // Draw water
         p.fill(0, 100, 255);
-        p.rect(0, 160, p.width, 120);
+        p.rect(0, 240, p.width, 80);  // Reduced water area
 
         // Draw road
         p.fill(70);
@@ -109,7 +108,7 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
 
         // Check if frog is on a log in water
         let onLog = false;
-        if (frog.y >= 160 && frog.y <= 260) {
+        if (frog.y >= 240 && frog.y <= 320) {  // Adjusted water area check
           logs.forEach(log => {
             if (frog.y === log.y && 
                 frog.x + frog.size > log.x && 
@@ -127,7 +126,6 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
           }
         }
 
-        // Check car collisions
         cars.forEach(car => {
           if (frog.y >= car.y && 
               frog.y <= car.y + 20 && 
@@ -183,6 +181,7 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
       p.mousePressed = () => {
         if (!gameStarted) {
           gameStarted = true;
+          setupGame();  // Reset game state when starting
         }
       };
     };
