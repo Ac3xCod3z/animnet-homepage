@@ -40,11 +40,13 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
       let gameState: GameState = { ...initialState };
 
       const resetGame = () => {
+        console.log('Resetting game state');
         const { dots, totalDots } = createDots();
         gameState = {
           ...initialState,
           dots,
-          totalDots
+          totalDots,
+          gameStarted: false
         };
         onScoreChange(0);
       };
@@ -136,7 +138,6 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
               console.log('Game won! Final score:', gameState.score);
               onGameOver();
               resetGame();
-              gameState.gameStarted = false;
               return false;
             }
             return false;
@@ -161,10 +162,14 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
       };
 
       p.mousePressed = () => {
-        if (!gameState.gameStarted && p.mouseX > 0 && p.mouseX < p.width && 
+        if (!gameState.gameStarted && 
+            p.mouseX > 0 && p.mouseX < p.width && 
             p.mouseY > 0 && p.mouseY < p.height) {
+          console.log('Game started via mouse click');
           gameState.gameStarted = true;
-          resetGame();
+          const { dots, totalDots } = createDots();
+          gameState.dots = dots;
+          gameState.totalDots = totalDots;
         }
       };
     };
@@ -181,7 +186,12 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
 
   return (
     <div className="relative">
-      <div ref={gameRef} className="rounded-lg overflow-hidden shadow-lg" />
+      <div 
+        ref={gameRef} 
+        className="rounded-lg overflow-hidden shadow-lg"
+        style={{ touchAction: 'none' }}  // Prevent touch scrolling
+        tabIndex={0}  // Make the div focusable for keyboard controls
+      />
       {isPlaying && (
         <div className="absolute top-2 left-2 bg-black/50 text-white px-3 py-1 rounded">
           Use arrow keys to move
