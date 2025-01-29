@@ -74,7 +74,6 @@ export const RedemptionFlow = ({
 
       if (error) throw error;
 
-      // Cast the response to unknown first, then to our expected type
       const response = data as unknown as RedemptionResponse;
       
       if (response.success) {
@@ -113,7 +112,7 @@ export const RedemptionFlow = ({
             Verify you're human
           </h3>
           <ReCAPTCHA
-            sitekey="YOUR_RECAPTCHA_SITE_KEY"
+            sitekey={process.env.RECAPTCHA_SITE_KEY || "6LcVd8YqAAAAAPxrAysmtwL1CCCTM6Kn_E_tY_17"}
             onChange={handleCaptchaComplete}
             theme="dark"
           />
