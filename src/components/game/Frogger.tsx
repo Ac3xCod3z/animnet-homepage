@@ -34,18 +34,18 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
       };
 
       const setupGame = () => {
-        // Initialize cars in three lanes
+        // Initialize cars in three lanes with better spacing
         cars = [
-          { x: 0, y: 280, width: 40, speed: 3 },
-          { x: 200, y: 320, width: 40, speed: -2.5 },
-          { x: 100, y: 360, width: 40, speed: 2 }
+          { x: 50, y: 280, width: 40, speed: 3 },
+          { x: 250, y: 320, width: 40, speed: -2.5 },
+          { x: 150, y: 360, width: 40, speed: 2 }
         ];
 
-        // Initialize logs in two lanes
+        // Initialize logs with better initial positions and spacing
         logs = [
-          { x: 0, y: 160, width: 80, speed: 2 },
+          { x: 50, y: 240, width: 80, speed: 2 },    // First log closer to safe zone
           { x: 200, y: 200, width: 80, speed: -1.5 },
-          { x: 100, y: 240, width: 80, speed: 1.8 }
+          { x: 100, y: 160, width: 80, speed: 1.8 }
         ];
 
         frog.x = 200;
@@ -53,16 +53,20 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
         score = 0;
         successfulCrossings = 0;
         onScoreChange(0);
+        gameStarted = false;  // Reset game started state
       };
 
       p.draw = () => {
         p.background(0);
 
         if (!gameStarted) {
+          // Draw start screen with clear instructions
           p.fill(255);
           p.textSize(20);
           p.textAlign(p.CENTER);
-          p.text('Click to start', p.width / 2, p.height / 2);
+          p.text('Click to start', p.width / 2, p.height / 2 - 20);
+          p.textSize(16);
+          p.text('Use arrow keys to move', p.width / 2, p.height / 2 + 20);
           return;
         }
 
@@ -158,10 +162,7 @@ export const Frogger = ({ onScoreChange, onGameOver }: FroggerProps) => {
       };
 
       p.keyPressed = () => {
-        if (!gameStarted) {
-          gameStarted = true;
-          return;
-        }
+        if (!gameStarted) return;
 
         switch (p.keyCode) {
           case p.UP_ARROW:
