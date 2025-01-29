@@ -74,7 +74,8 @@ export const RedemptionFlow = ({
 
       if (error) throw error;
 
-      const response = data as RedemptionResponse;
+      // Cast the response to unknown first, then to our expected type
+      const response = data as unknown as RedemptionResponse;
       
       if (response.success) {
         console.log('Redemption successful');
