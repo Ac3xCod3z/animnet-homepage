@@ -12,6 +12,12 @@ interface RedemptionFlowProps {
   onFailure: (message: string) => void;
 }
 
+interface RedemptionResponse {
+  success: boolean;
+  message: string;
+  remainingRedemptions?: number;
+}
+
 export const RedemptionFlow = ({ 
   code, 
   walletAddress, 
@@ -68,12 +74,14 @@ export const RedemptionFlow = ({
 
       if (error) throw error;
 
-      if (data.success) {
+      const response = data as RedemptionResponse;
+      
+      if (response.success) {
         console.log('Redemption successful');
         onSuccess();
       } else {
-        console.log('Redemption failed:', data.message);
-        onFailure(data.message);
+        console.log('Redemption failed:', response.message);
+        onFailure(response.message);
       }
     } catch (error) {
       console.error('Error in redemption process:', error);
