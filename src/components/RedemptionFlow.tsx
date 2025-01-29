@@ -30,7 +30,7 @@ export const RedemptionFlow = ({
   const { toast } = useToast();
 
   const handleGameOver = () => {
-    if (gameScore >= 10) {
+    if (gameScore >= 3) {
       console.log('Game completed with qualifying score:', gameScore);
       setShowCaptcha(true);
     } else {
@@ -96,7 +96,7 @@ export const RedemptionFlow = ({
       {!showCaptcha ? (
         <div className="space-y-4">
           <h3 className="text-lg font-semibold text-white">
-            Score 10 points to proceed
+            Score 3 points to proceed
           </h3>
           <FlappyBird 
             onScoreChange={setGameScore} 

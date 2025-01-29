@@ -103,17 +103,15 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
         // Ball collision with paddles
         // Left paddle (player) collision
         if (
-          ball.x - ball.size / 2 <= paddle.x + paddle.width &&
-          ball.x + ball.size / 2 >= paddle.x &&
-          ball.y >= paddle.y &&
-          ball.y <= paddle.y + paddle.height &&
-          ball.speedX < 0
+          ball.x <= paddle.x + paddle.width + ball.size / 2 &&
+          ball.x >= paddle.x &&
+          ball.y >= paddle.y - ball.size / 2 &&
+          ball.y <= paddle.y + paddle.height + ball.size / 2
         ) {
-          ball.speedX *= -1;
-          // Add a slight vertical adjustment based on where the ball hits the paddle
+          ball.speedX = Math.abs(ball.speedX); // Ensure ball moves right
           const relativeIntersectY = (paddle.y + (paddle.height / 2)) - ball.y;
           const normalizedRelativeIntersectY = relativeIntersectY / (paddle.height / 2);
-          ball.speedY = -normalizedRelativeIntersectY * 6; // Max vertical speed of 6
+          ball.speedY = -normalizedRelativeIntersectY * 6;
           
           score++;
           console.log('Score increased:', score);
@@ -122,14 +120,12 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
 
         // Right paddle (AI) collision
         if (
-          ball.x + ball.size / 2 >= aiPaddle.x &&
-          ball.x - ball.size / 2 <= aiPaddle.x + aiPaddle.width &&
-          ball.y >= aiPaddle.y &&
-          ball.y <= aiPaddle.y + aiPaddle.height &&
-          ball.speedX > 0
+          ball.x >= aiPaddle.x - ball.size / 2 &&
+          ball.x <= aiPaddle.x + aiPaddle.width &&
+          ball.y >= aiPaddle.y - ball.size / 2 &&
+          ball.y <= aiPaddle.y + paddle.height + ball.size / 2
         ) {
-          ball.speedX *= -1;
-          // Add a slight vertical adjustment based on where the ball hits the paddle
+          ball.speedX = -Math.abs(ball.speedX); // Ensure ball moves left
           const relativeIntersectY = (aiPaddle.y + (aiPaddle.height / 2)) - ball.y;
           const normalizedRelativeIntersectY = relativeIntersectY / (aiPaddle.height / 2);
           ball.speedY = -normalizedRelativeIntersectY * 6;
