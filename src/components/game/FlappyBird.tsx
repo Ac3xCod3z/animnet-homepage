@@ -10,21 +10,6 @@ export const FlappyBird = ({ onScoreChange, onGameOver }: FlappyBirdProps) => {
   const gameRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Add event listener to prevent spacebar scrolling
-  useEffect(() => {
-    const preventSpacebarScroll = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-      }
-    };
-
-    window.addEventListener('keydown', preventSpacebarScroll);
-
-    return () => {
-      window.removeEventListener('keydown', preventSpacebarScroll);
-    };
-  }, []);
-
   useEffect(() => {
     if (!gameRef.current) return;
 
@@ -32,8 +17,8 @@ export const FlappyBird = ({ onScoreChange, onGameOver }: FlappyBirdProps) => {
       y: 200,
       x: 64,
       velocity: 0,
-      gravity: 0.6,
-      lift: -10, // Reduced from -15 to -10 for softer jumps
+      gravity: 0.5, // Reduced from 0.6 to 0.5 for better control
+      lift: -8, // Reduced from -10 to -8 for more controlled jumps
     };
 
     let pipes: { x: number; top: number; bottom: number }[] = [];
@@ -63,7 +48,7 @@ export const FlappyBird = ({ onScoreChange, onGameOver }: FlappyBirdProps) => {
           p.fill(255);
           p.textSize(20);
           p.textAlign(p.CENTER);
-          p.text('Click or Press SPACE to start', p.width / 2, p.height / 2);
+          p.text('Click to start and play', p.width / 2, p.height / 2);
           return;
         }
 
@@ -137,16 +122,6 @@ export const FlappyBird = ({ onScoreChange, onGameOver }: FlappyBirdProps) => {
         }
         bird.velocity += bird.lift;
       };
-
-      p.keyPressed = () => {
-        if (p.keyCode === 32) { // spacebar
-          if (!gameStarted) {
-            gameStarted = true;
-            return;
-          }
-          bird.velocity += bird.lift;
-        }
-      };
     };
 
     const p5Instance = new p5(sketch, gameRef.current);
@@ -164,7 +139,7 @@ export const FlappyBird = ({ onScoreChange, onGameOver }: FlappyBirdProps) => {
       <div ref={gameRef} className="rounded-lg overflow-hidden shadow-lg" />
       {isPlaying && (
         <div className="absolute top-2 left-2 bg-black/50 text-white px-3 py-1 rounded">
-          Use SPACE or CLICK to jump
+          Click to jump
         </div>
       )}
     </div>
