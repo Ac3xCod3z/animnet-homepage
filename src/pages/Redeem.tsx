@@ -3,7 +3,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { MangaPanel } from "@/components/MangaPanel";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
-import { FlappyBird } from "@/components/game/FlappyBird";
+import { Frogger } from "@/components/game/Frogger";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -82,7 +82,7 @@ const Redeem = () => {
                 <h2 className="text-2xl font-bold text-white text-center mb-4">
                   Score 10+ points to continue
                 </h2>
-                <FlappyBird 
+                <Frogger 
                   onScoreChange={setGameScore} 
                   onGameOver={() => handleGameComplete(gameScore)}
                 />
