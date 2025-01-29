@@ -59,19 +59,11 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
       };
 
       const checkPaddleCollision = (paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number) => {
-        const ballLeft = ball.x - ball.size / 2;
-        const ballRight = ball.x + ball.size / 2;
-        const ballTop = ball.y - ball.size / 2;
-        const ballBottom = ball.y + ball.size / 2;
-
-        const paddleRight = paddleX + paddleWidth;
-        const paddleBottom = paddleY + paddleHeight;
-
         return (
-          ballRight >= paddleX &&
-          ballLeft <= paddleRight &&
-          ballBottom >= paddleY &&
-          ballTop <= paddleBottom
+          ball.x + ball.size / 2 > paddleX &&
+          ball.x - ball.size / 2 < paddleX + paddleWidth &&
+          ball.y + ball.size / 2 > paddleY &&
+          ball.y - ball.size / 2 < paddleY + paddleHeight
         );
       };
 
@@ -108,10 +100,6 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
         }
         aiPaddle.y = p.constrain(aiPaddle.y, 0, p.height - aiPaddle.height);
 
-        // Check player paddle collision BEFORE updating ball position
-        const playerHit = checkPaddleCollision(paddle.x, paddle.y, paddle.width, paddle.height);
-        const aiHit = checkPaddleCollision(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
-
         // Update ball position
         ball.x += ball.speedX;
         ball.y += ball.speedY;
@@ -121,10 +109,13 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
           ball.speedY *= -1;
         }
 
+        // Check for paddle collisions
+        const playerHit = checkPaddleCollision(paddle.x, paddle.y, paddle.width, paddle.height);
+        const aiHit = checkPaddleCollision(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+
         // Handle player paddle collision
         if (playerHit && ball.speedX < 0) {
-          console.log('Player paddle collision detected!');
-          ball.speedX = Math.abs(ball.speedX);
+          ball.speedX *= -1;
           const relativeIntersectY = (paddle.y + (paddle.height / 2)) - ball.y;
           const normalizedRelativeIntersectY = relativeIntersectY / (paddle.height / 2);
           ball.speedY = -normalizedRelativeIntersectY * 6;
@@ -138,20 +129,19 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
             onGameOver();
             resetGame();
             gameStarted = false;
-            return;
           }
         }
 
         // Handle AI paddle collision
         if (aiHit && ball.speedX > 0) {
-          ball.speedX = -Math.abs(ball.speedX);
+          ball.speedX *= -1;
           const relativeIntersectY = (aiPaddle.y + (aiPaddle.height / 2)) - ball.y;
           const normalizedRelativeIntersectY = relativeIntersectY / (aiPaddle.height / 2);
           ball.speedY = -normalizedRelativeIntersectY * 6;
         }
 
-        // Check if ball is out (only if no paddle collision occurred)
-        if (!playerHit && ball.x < 0 || ball.x > p.width) {
+        // Check if ball is out (only if it's past the paddles)
+        if (ball.x < 0 || ball.x > p.width) {
           console.log('Game Over! Final score:', score);
           onGameOver();
           resetGame();
