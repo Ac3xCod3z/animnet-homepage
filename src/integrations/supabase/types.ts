@@ -14,18 +14,21 @@ export type Database = {
           code_id: string
           id: string
           redeemed_at: string
+          season: number | null
           wallet_address: string
         }
         Insert: {
           code_id: string
           id?: string
           redeemed_at?: string
+          season?: number | null
           wallet_address: string
         }
         Update: {
           code_id?: string
           id?: string
           redeemed_at?: string
+          season?: number | null
           wallet_address?: string
         }
         Relationships: [
@@ -38,28 +41,100 @@ export type Database = {
           },
         ]
       }
+      device_fingerprints: {
+        Row: {
+          created_at: string | null
+          fingerprint_hash: string
+          id: string
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string | null
+          fingerprint_hash: string
+          id?: string
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string | null
+          fingerprint_hash?: string
+          id?: string
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      game_scores: {
+        Row: {
+          created_at: string | null
+          id: string
+          score: number
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          score: number
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          score?: number
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      ip_tracking: {
+        Row: {
+          attempt_count: number | null
+          created_at: string | null
+          id: string
+          ip_address: string
+          last_attempt: string | null
+        }
+        Insert: {
+          attempt_count?: number | null
+          created_at?: string | null
+          id?: string
+          ip_address: string
+          last_attempt?: string | null
+        }
+        Update: {
+          attempt_count?: number | null
+          created_at?: string | null
+          id?: string
+          ip_address?: string
+          last_attempt?: string | null
+        }
+        Relationships: []
+      }
       redemption_codes: {
         Row: {
           code: string
+          cooldown_period: unknown | null
           created_at: string
           id: string
           max_redemptions: number
+          season: number | null
           total_redemptions: number
           updated_at: string
         }
         Insert: {
           code: string
+          cooldown_period?: unknown | null
           created_at?: string
           id?: string
           max_redemptions?: number
+          season?: number | null
           total_redemptions?: number
           updated_at?: string
         }
         Update: {
           code?: string
+          cooldown_period?: unknown | null
           created_at?: string
           id?: string
           max_redemptions?: number
+          season?: number | null
           total_redemptions?: number
           updated_at?: string
         }
@@ -83,6 +158,17 @@ export type Database = {
             Args: {
               p_code: string
               p_wallet_address: string
+            }
+            Returns: Json
+          }
+        | {
+            Args: {
+              p_code: string
+              p_wallet_address: string
+              p_ip_address: string
+              p_fingerprint: string
+              p_game_score: number
+              p_recaptcha_token: string
             }
             Returns: Json
           }
