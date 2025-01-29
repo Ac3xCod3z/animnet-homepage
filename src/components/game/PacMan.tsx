@@ -16,6 +16,14 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
   useEffect(() => {
     if (!gameRef.current) return;
 
+    // Prevent arrow key scrolling
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ([37, 38, 39, 40].includes(e.keyCode)) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
     const initialState: GameState = {
       player: {
         x: 40,
@@ -97,6 +105,7 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
           case 3: nextY -= gameState.player.speed; break;
         }
 
+        // Only update position if there's no collision
         if (!checkCollision(nextX, nextY)) {
           gameState.player.x = nextX;
           gameState.player.y = nextY;
@@ -111,6 +120,7 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
           return { ...ghost, ...newPos };
         });
 
+        // Check ghost collisions and draw ghosts
         gameState.ghosts.forEach(ghost => {
           p.fill(ghost.color);
           p.noStroke();
@@ -119,7 +129,6 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
           const distance = p.dist(gameState.player.x, gameState.player.y, ghost.x, ghost.y);
           if (distance < gameState.player.size) {
             console.log('Ghost collision! Game over');
-            gameState.gameStarted = false;
             onGameOver();
             resetGame();
             return;
@@ -179,6 +188,7 @@ export const PacMan = ({ onScoreChange, onGameOver }: PacManProps) => {
 
     return () => {
       console.log('Cleaning up Pac-Man game');
+      window.removeEventListener('keydown', handleKeyDown);
       p5Instance.remove();
       setIsPlaying(false);
     };
