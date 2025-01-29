@@ -59,17 +59,14 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
       };
 
       const checkPaddleCollision = (paddleX: number, paddleY: number, paddleWidth: number, paddleHeight: number) => {
-        // Calculate the edges of the ball
         const ballLeft = ball.x - ball.size / 2;
         const ballRight = ball.x + ball.size / 2;
         const ballTop = ball.y - ball.size / 2;
         const ballBottom = ball.y + ball.size / 2;
 
-        // Calculate the edges of the paddle
         const paddleRight = paddleX + paddleWidth;
         const paddleBottom = paddleY + paddleHeight;
 
-        // Check for collision
         return (
           ballRight >= paddleX &&
           ballLeft <= paddleRight &&
@@ -111,6 +108,10 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
         }
         aiPaddle.y = p.constrain(aiPaddle.y, 0, p.height - aiPaddle.height);
 
+        // Check player paddle collision BEFORE updating ball position
+        const playerHit = checkPaddleCollision(paddle.x, paddle.y, paddle.width, paddle.height);
+        const aiHit = checkPaddleCollision(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height);
+
         // Update ball position
         ball.x += ball.speedX;
         ball.y += ball.speedY;
@@ -120,41 +121,37 @@ export const Pong = ({ onScoreChange, onGameOver }: PongProps) => {
           ball.speedY *= -1;
         }
 
-        // Check player paddle collision
-        if (checkPaddleCollision(paddle.x, paddle.y, paddle.width, paddle.height)) {
+        // Handle player paddle collision
+        if (playerHit && ball.speedX < 0) {
           console.log('Player paddle collision detected!');
-          if (ball.speedX < 0) { // Only bounce if ball is moving left
-            ball.speedX = Math.abs(ball.speedX); // Ensure ball moves right
-            const relativeIntersectY = (paddle.y + (paddle.height / 2)) - ball.y;
-            const normalizedRelativeIntersectY = relativeIntersectY / (paddle.height / 2);
-            ball.speedY = -normalizedRelativeIntersectY * 6;
-            
-            score++;
-            console.log('Score increased:', score);
-            onScoreChange(score);
+          ball.speedX = Math.abs(ball.speedX);
+          const relativeIntersectY = (paddle.y + (paddle.height / 2)) - ball.y;
+          const normalizedRelativeIntersectY = relativeIntersectY / (paddle.height / 2);
+          ball.speedY = -normalizedRelativeIntersectY * 6;
+          
+          score++;
+          console.log('Score increased:', score);
+          onScoreChange(score);
 
-            if (score >= 3) {
-              console.log('Game won! Final score:', score);
-              onGameOver();
-              resetGame();
-              gameStarted = false;
-              return;
-            }
+          if (score >= 3) {
+            console.log('Game won! Final score:', score);
+            onGameOver();
+            resetGame();
+            gameStarted = false;
+            return;
           }
         }
 
-        // Check AI paddle collision
-        if (checkPaddleCollision(aiPaddle.x, aiPaddle.y, aiPaddle.width, aiPaddle.height)) {
-          if (ball.speedX > 0) { // Only bounce if ball is moving right
-            ball.speedX = -Math.abs(ball.speedX); // Ensure ball moves left
-            const relativeIntersectY = (aiPaddle.y + (aiPaddle.height / 2)) - ball.y;
-            const normalizedRelativeIntersectY = relativeIntersectY / (aiPaddle.height / 2);
-            ball.speedY = -normalizedRelativeIntersectY * 6;
-          }
+        // Handle AI paddle collision
+        if (aiHit && ball.speedX > 0) {
+          ball.speedX = -Math.abs(ball.speedX);
+          const relativeIntersectY = (aiPaddle.y + (aiPaddle.height / 2)) - ball.y;
+          const normalizedRelativeIntersectY = relativeIntersectY / (aiPaddle.height / 2);
+          ball.speedY = -normalizedRelativeIntersectY * 6;
         }
 
-        // Check if ball is out
-        if (ball.x < 0 || ball.x > p.width) {
+        // Check if ball is out (only if no paddle collision occurred)
+        if (!playerHit && ball.x < 0 || ball.x > p.width) {
           console.log('Game Over! Final score:', score);
           onGameOver();
           resetGame();
