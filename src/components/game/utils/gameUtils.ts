@@ -1,4 +1,4 @@
-import { Position } from '../types/gameTypes';
+import { Position, Ghost } from '../types/gameTypes';
 import { MAZE_LAYOUT, CELL_SIZE } from '../constants/mazeConfig';
 
 export const checkCollision = (x: number, y: number): boolean => {
@@ -26,7 +26,7 @@ export const createDots = (): { dots: Position[]; totalDots: number } => {
   return { dots, totalDots };
 };
 
-export const moveGhost = (ghost: Position, speed: number): Position => {
+export const moveGhost = (ghost: Ghost, speed: number): Position => {
   let nextX = ghost.x;
   let nextY = ghost.y;
 
