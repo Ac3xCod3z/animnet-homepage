@@ -1,14 +1,15 @@
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { MangaPanel } from "@/components/MangaPanel";
 import { AnimatedCounter } from "@/components/AnimatedCounter";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useEffect } from "react";
 
 const Redeem = () => {
   const [redemptionCount, setRedemptionCount] = useState<string | null>(null);
   const [showCounter, setShowCounter] = useState(true);
   const [showAccessMessage, setShowAccessMessage] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
   useEffect(() => {
     const fetchRedemptionCount = async () => {
@@ -99,6 +100,15 @@ const Redeem = () => {
             </div>
             <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/3 p-8">
               <MangaPanel onAccessMessageChange={handleAccessMessageChange} />
+            </div>
+            <div className="absolute bottom-0 left-1/2 -translate-x-1/2 z-10">
+              <img 
+                src={isHovered ? "/animnet-hero.png" : "/animnet-hero1.png"}
+                alt="AnimNet Hero"
+                className="w-full max-w-3xl h-auto rounded-lg shadow-lg transition-all duration-300"
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+              />
             </div>
           </div>
         </div>
